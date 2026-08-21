@@ -1,321 +1,273 @@
-const strengths = [
-  "Node.js & TypeScript",
-  "Nest.js microservices",
-  "gRPC & REST APIs",
-  "PostgreSQL & MongoDB",
-  "Redis & Elasticsearch",
-  "AWS, GCP & Kubernetes",
-];
+import {
+  experience,
+  focusAreas,
+  heroStats,
+  profile,
+  projects,
+  services,
+} from "./profile-data";
 
-const metrics = [
-  { value: "500+", label: "merchants served" },
-  { value: "10k+", label: "daily reservations" },
-  { value: "1M+", label: "daily active users" },
-  { value: "99.9%", label: "payment success rate" },
-];
-
-const projects = [
+const process = [
   {
-    title: "Panda KSA",
-    type: "E-commerce backend",
-    description:
-      "Architected a scalable marketplace backend with Elasticsearch-driven search, Stripe-secured payments, and support for 100+ stores.",
-    tags: ["Elasticsearch", "Stripe", "Marketplace"],
+    step: "01",
+    title: "Define & Architect",
+    text: "Map the product flow, service boundaries, data model, and delivery risks before code starts.",
   },
   {
-    title: "Harmony",
-    type: "Cloud operations",
-    description:
-      "Engineered backend services for a cloud-based housekeeping management system using Firebase, reducing scheduling conflicts by 30%.",
-    tags: ["Firebase", "Scheduling", "Workflows"],
+    step: "02",
+    title: "Build & Optimize",
+    text: "Ship modular backend services with clean APIs, database tuning, caching, and strong test coverage.",
   },
   {
-    title: "Women First Ride-Hailing",
-    type: "Realtime systems",
-    description:
-      "Built a realtime backend tracking system using WebSockets and Mapbox APIs, decreasing ETA mismatches by 25%.",
-    tags: ["WebSockets", "Mapbox", "Realtime"],
-  },
-  {
-    title: "Loyalty Management Service",
-    type: "Microservices",
-    description:
-      "Developed a microservices-based backend on Google Cloud, handling 100k+ daily requests and improving user engagement by 35%.",
-    tags: ["GCP", "Microservices", "Scale"],
-  },
-];
-
-const experience = [
-  {
-    company: "V For Technology",
-    location: "Dammam, KSA",
-    role: "Mid-Senior Software Engineer",
-    period: "May 2025 - Present",
-    bullets: [
-      "Led the catalog service for a multi-tenant SaaS e-commerce platform serving 500+ merchants.",
-      "Architected 8 scalable microservices using Nest.js, Nx monorepo, and gRPC for catalog and inventory management.",
-      "Improved search performance by 40% with Redis caching and Elasticsearch optimization.",
-      "Reduced API response time from 800ms to 200ms through query optimization and load balancing.",
-    ],
-  },
-  {
-    company: "Zetaton",
-    location: "Milwaukee, US - Remote",
-    role: "Backend Developer",
-    period: "Apr 2024 - May 2025",
-    bullets: [
-      "Built a scalable booking system handling 10k+ daily reservations with automated payment processing.",
-      "Designed event-driven architecture with Firebase, GCP Pub/Sub, and Stripe API integration.",
-      "Implemented realtime order management with automated workflows and error handling.",
-      "Reached a 99.9% payment success rate and reduced booking processing time by 60%.",
-    ],
-  },
-  {
-    company: "CustEx",
-    location: "Remote",
-    role: "Backend Developer",
-    period: "Jun 2023 - Feb 2024",
-    bullets: [
-      "Optimized a video transcoding pipeline for a platform serving 1M+ daily active users.",
-      "Redesigned load balancing logic and implemented a comprehensive Jest testing strategy.",
-      "Reached 85% code coverage across unit and integration tests.",
-      "Increased video processing throughput by 40% and reduced production bugs by 70%.",
-    ],
-  },
-];
-
-const skillGroups = [
-  {
-    title: "Programming",
-    skills: ["JavaScript", "TypeScript", "Python", "C++", "SQL"],
-  },
-  {
-    title: "Backend",
-    skills: [
-      "Node.js",
-      "Express.js",
-      "Nest.js",
-      "Fastify",
-      "REST APIs",
-      "gRPC",
-      "Microservices",
-      "Event-driven systems",
-    ],
-  },
-  {
-    title: "Data",
-    skills: ["PostgreSQL", "MongoDB", "Redis", "Elasticsearch"],
-  },
-  {
-    title: "Cloud & DevOps",
-    skills: ["AWS EC2", "AWS S3", "AWS Lambda", "GCP", "Docker", "Kubernetes"],
-  },
-  {
-    title: "Delivery",
-    skills: ["Git", "Jenkins", "GitHub Actions", "Jest", "Mocha", "Swagger", "Nx Monorepo"],
+    step: "03",
+    title: "Deploy & Support",
+    text: "Move confidently into production with cloud infrastructure, monitoring, and practical reliability work.",
   },
 ];
 
 export default function Home() {
   return (
-    <main>
-      <section className="hero" id="top" aria-labelledby="hero-title">
-        <div className="heroOverlay" />
-        <header className="siteHeader" aria-label="Primary navigation">
+    <main className="siteShell">
+      <section className="heroSurface" id="top" aria-labelledby="hero-title">
+        <div className="ambient ambientOne" />
+        <div className="ambient ambientTwo" />
+
+        <header className="navPill" aria-label="Primary navigation">
           <a className="brand" href="#top" aria-label="Ahmed Salman home">
-            <span className="brandMark">AS</span>
-            <span>Ahmed Salman</span>
+            AHMED SALMAN
           </a>
           <nav>
-            <a href="#work">Work</a>
-            <a href="#experience">Experience</a>
-            <a href="#skills">Skills</a>
+            <a href="#projects">Projects</a>
+            <a href="#services">Services</a>
+            <a href="/cv">My CV</a>
             <a href="#contact">Contact</a>
           </nav>
+          <a className="navCta" href={`mailto:${profile.email}`}>
+            Book a call
+          </a>
         </header>
 
-        <div className="heroContent">
-          <p className="eyebrow">Mid-Senior Backend Software Engineer</p>
-          <h1 id="hero-title">Ahmed Salman</h1>
-          <p className="heroLead">
-            I design scalable distributed systems, microservices, and production
-            backend platforms with Node.js, TypeScript, cloud infrastructure,
-            and performance-first engineering.
-          </p>
-          <div className="heroActions" aria-label="Primary actions">
-            <a className="primaryAction" href="mailto:ahmedsapry486@gmail.com">
-              Start a conversation
-            </a>
-            <a className="secondaryAction" href="#work">
-              View selected work
-            </a>
+        <div className="heroGrid">
+          <div className="heroCopy reveal">
+            <p className="kicker">{profile.role}</p>
+            <h1 id="hero-title">
+              Hi, I am Ahmed, building{" "}
+              <span>backend systems that scale.</span>
+            </h1>
+            <p>
+              I turn complex product requirements into fast, reliable APIs,
+              microservices, and distributed systems for high-traffic products.
+            </p>
+            <div className="heroActions">
+              <a className="buttonPrimary" href={`mailto:${profile.email}`}>
+                Let us connect
+              </a>
+              <a className="buttonSecondary" href="/cv">
+                My CV
+              </a>
+            </div>
           </div>
-          <div className="strengthList" aria-label="Engineering focus areas">
-            {strengths.map((item) => (
-              <span key={item}>{item}</span>
+
+          <div className="heroVisual reveal" aria-label="Ahmed Salman engineering summary">
+            <div className="orbitRing" />
+            <div className="portraitCard">
+              <div className="avatarMark">AS</div>
+              <p>Backend Engineer</p>
+              <span>Node.js / TypeScript / Cloud</span>
+            </div>
+            {heroStats.map((stat, index) => (
+              <div className={`floatStat stat${index + 1}`} key={stat.label}>
+                <strong>{stat.value}</strong>
+                <span>{stat.label}</span>
+              </div>
             ))}
           </div>
         </div>
 
-        <div className="heroStatus" aria-label="Current professional summary">
+        <div className="trustedStrip reveal" aria-label="Experience across companies and products">
+          <span>Experience across</span>
+          <strong>V For Technology</strong>
+          <strong>Zetaton</strong>
+          <strong>CustEx</strong>
+          <strong>Panda KSA</strong>
+          <strong>Harmony</strong>
+        </div>
+      </section>
+
+      <section className="section" id="projects" aria-labelledby="projects-title">
+        <div className="sectionIntro reveal">
+          <p className="kicker">Recent Projects</p>
+          <h2 id="projects-title">Production systems with measurable impact.</h2>
           <p>
-            Building reliable backend infrastructure for high-traffic,
-            production-scale applications across SaaS, booking, media, and
-            marketplace products.
+            A focused selection from marketplace, booking, realtime, and cloud
+            microservice work.
           </p>
-        </div>
-      </section>
-
-      <section className="section metricsBand" aria-label="Portfolio highlights">
-        <div className="contentGrid metricsGrid">
-          {metrics.map((metric) => (
-            <article className="metric" key={metric.label}>
-              <strong>{metric.value}</strong>
-              <span>{metric.label}</span>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="section aboutSection" aria-labelledby="about-title">
-        <div className="contentGrid twoColumn">
-          <div>
-            <p className="sectionKicker">Profile</p>
-            <h2 id="about-title">Backend engineering for systems that need to scale.</h2>
-          </div>
-          <div className="bodyCopy">
-            <p>
-              I am a mid-senior backend software engineer specialized in
-              scalable distributed systems, microservices architecture, API
-              design, database optimization, performance tuning, and
-              event-driven systems.
-            </p>
-            <p>
-              My recent work includes multi-tenant SaaS e-commerce platforms,
-              booking systems with automated payments, realtime order
-              management, video processing infrastructure, and cloud-based
-              loyalty services handling production traffic at scale.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="section workSection" id="work" aria-labelledby="work-title">
-        <div className="sectionIntro">
-          <p className="sectionKicker">Selected Work</p>
-          <h2 id="work-title">Production systems with measurable impact.</h2>
         </div>
         <div className="projectGrid">
           {projects.map((project) => (
-            <article className="projectCard" key={project.title}>
-              <div className="cardTopline">{project.type}</div>
-              <h3>{project.title}</h3>
-              <p>{project.description}</p>
-              <div className="tagRow" aria-label={`${project.title} skills`}>
-                {project.tags.map((tag) => (
-                  <span key={tag}>{tag}</span>
-                ))}
+            <article className="projectCard reveal" key={project.title}>
+              <div className="projectPreview">
+                <span>{project.type}</span>
+                <strong>{project.title}</strong>
+              </div>
+              <div className="glassInfo">
+                <span>{project.type}</span>
+                <h3>{project.title}</h3>
+                <p>{project.description}</p>
+                <div className="tagRow">
+                  {project.tags.map((tag) => (
+                    <span key={tag}>{tag}</span>
+                  ))}
+                </div>
               </div>
             </article>
           ))}
         </div>
       </section>
 
-      <section
-        className="section experienceSection"
-        id="experience"
-        aria-labelledby="experience-title"
-      >
-        <div className="contentGrid twoColumn">
-          <div>
-            <p className="sectionKicker">Experience</p>
-            <h2 id="experience-title">Backend delivery across SaaS, cloud, and media platforms.</h2>
-          </div>
-          <div className="experienceList">
-            {experience.map((item) => (
-              <article className="experienceItem" key={`${item.company}-${item.role}`}>
-                <div className="experienceHeader">
-                  <div>
-                    <h3>{item.role}</h3>
-                    <p>{item.company}</p>
-                  </div>
-                  <div className="experienceMeta">
-                    <span>{item.period}</span>
-                    <span>{item.location}</span>
-                  </div>
-                </div>
-                <ul>
-                  {item.bullets.map((bullet) => (
-                    <li key={bullet}>{bullet}</li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
+      <section className="section" id="services" aria-labelledby="services-title">
+        <div className="sectionIntro reveal">
+          <p className="kicker">Services</p>
+          <h2 id="services-title">Backend engineering from architecture to launch.</h2>
+          <p>
+            Practical, production-minded support for teams that need their
+            software to stay fast, clear, and reliable.
+          </p>
+        </div>
+        <div className="serviceGrid">
+          {services.map((service) => (
+            <article className="serviceCard reveal" key={service.title}>
+              <div className="serviceIcon" aria-hidden="true">
+                <span />
+              </div>
+              <h3>{service.title}</h3>
+              <p>{service.description}</p>
+            </article>
+          ))}
         </div>
       </section>
 
-      <section className="section skillsSection" id="skills" aria-labelledby="skills-title">
-        <div className="sectionIntro compactIntro">
-          <p className="sectionKicker">Toolbox</p>
-          <h2 id="skills-title">The stack I use to ship reliable backend systems.</h2>
+      <section className="statBand reveal" aria-label="Portfolio metrics">
+        {heroStats.map((stat) => (
+          <div key={stat.label}>
+            <strong>{stat.value}</strong>
+            <span>{stat.label}</span>
+          </div>
+        ))}
+      </section>
+
+      <section className="section" aria-labelledby="process-title">
+        <div className="sectionIntro reveal">
+          <p className="kicker">Process</p>
+          <h2 id="process-title">A clear workflow for complex backend work.</h2>
+          <p>
+            From early system decisions to production support, every step is
+            designed to reduce ambiguity and keep delivery moving.
+          </p>
         </div>
-        <div className="skillGroupGrid" aria-label="Technical skills">
-          {skillGroups.map((group) => (
-            <article className="skillGroup" key={group.title}>
-              <h3>{group.title}</h3>
-              <div className="skillsGrid">
-                {group.skills.map((skill) => (
+        <div className="processGrid">
+          {process.map((item) => (
+            <article className="processCard reveal" key={item.step}>
+              <strong>{item.step}</strong>
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section aboutPanel" id="about" aria-labelledby="about-title">
+        <div className="sectionIntro reveal">
+          <p className="kicker">About Me</p>
+          <h2 id="about-title">Clean backend thinking, shipped into real products.</h2>
+          <p>{profile.summary}</p>
+        </div>
+        <div className="aboutGrid">
+          <aside className="profileCard reveal">
+            <div className="profileImage">
+              <span>AS</span>
+            </div>
+            <div className="availability">
+              <span />
+              Available for backend roles
+            </div>
+            <h3>{profile.name}</h3>
+            <p>{profile.role}</p>
+            <div className="socialRow">
+              <a href={profile.linkedin} target="_blank" rel="noreferrer">
+                in
+              </a>
+              <a href={profile.github} target="_blank" rel="noreferrer">
+                gh
+              </a>
+              <a href={`mailto:${profile.email}`}>@</a>
+            </div>
+          </aside>
+
+          <div className="aboutStack">
+            <article className="glassPanel reveal">
+              <h3>What I do</h3>
+              <p>
+                I specialize in Node.js, TypeScript, Nest.js, gRPC,
+                event-driven architecture, database optimization, caching,
+                search, and cloud deployment for production backend systems.
+              </p>
+            </article>
+            <article className="glassPanel reveal">
+              <h3>Tech Stack</h3>
+              <div className="skillCloud">
+                {focusAreas.map((skill) => (
                   <span key={skill}>{skill}</span>
                 ))}
               </div>
             </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="section educationSection" aria-labelledby="education-title">
-        <div className="contentGrid twoColumn">
-          <div>
-            <p className="sectionKicker">Education</p>
-            <h2 id="education-title">Computer Science & AI foundation.</h2>
-          </div>
-          <div className="educationCard">
-            <h3>Bachelor of Science in Computer Science & AI</h3>
-            <p>Benha University, 2019 - 2023</p>
-            <p>GPA: 3.4/4.0. Graduation Project: A+.</p>
-            <p>
-              Relevant coursework includes Data Structures & Algorithms, System
-              Design, Distributed Systems, and Cloud Computing.
-            </p>
+            <article className="glassPanel reveal">
+              <h3>Experience</h3>
+              <div className="timelineList">
+                {experience.map((item) => (
+                  <div key={`${item.company}-${item.period}`}>
+                    <span>{item.role}</span>
+                    <strong>{item.company}</strong>
+                    <em>{item.period}</em>
+                  </div>
+                ))}
+              </div>
+            </article>
           </div>
         </div>
       </section>
 
-      <section className="contactSection" id="contact" aria-labelledby="contact-title">
-        <div className="contactInner">
-          <div>
-            <p className="sectionKicker">Contact</p>
-            <h2 id="contact-title">Let us build reliable backend systems.</h2>
-          </div>
-          <div>
-            <p>
-              Reach Ahmed Salman for backend engineering, microservices,
-              distributed systems, cloud platforms, and technical delivery.
-            </p>
-            <div className="contactActions">
-              <a href="mailto:ahmedsapry486@gmail.com">Email Ahmed</a>
-              <a href="tel:+201006419351">Call</a>
-              <a href="https://github.com/ahmedsalman74" target="_blank" rel="noreferrer">
-                GitHub
-              </a>
-              <a href="https://www.linkedin.com/in/ahmed-salman74" target="_blank" rel="noreferrer">
-                LinkedIn
-              </a>
-            </div>
-          </div>
+      <section className="ctaPanel reveal" id="contact" aria-labelledby="contact-title">
+        <div>
+          <p className="kicker">Contact</p>
+          <h2 id="contact-title">
+            Your backend platform deserves engineering that holds up.
+          </h2>
+          <p>
+            Reach me for backend engineering, microservices, API platforms,
+            cloud systems, and performance-focused delivery.
+          </p>
+        </div>
+        <div className="ctaActions">
+          <a className="buttonPrimary" href={`mailto:${profile.email}`}>
+            Book a call
+          </a>
+          <a className="buttonSecondary" href="/cv">
+            Preview CV
+          </a>
         </div>
       </section>
+
+      <footer className="footer">
+        <strong>{profile.name}</strong>
+        <nav aria-label="Footer navigation">
+          <a href="#top">Home</a>
+          <a href="#projects">Projects</a>
+          <a href="/cv">My CV</a>
+          <a href={`mailto:${profile.email}`}>Contact</a>
+        </nav>
+        <p>(c) 2026 Ahmed Salman. Built for scalable backend work.</p>
+      </footer>
     </main>
   );
 }
