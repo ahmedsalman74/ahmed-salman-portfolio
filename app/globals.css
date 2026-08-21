@@ -1,0 +1,502 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f4f1ea;
+  --foreground: #111817;
+  --ink: #0b0f0e;
+  --muted: #5d6965;
+  --line: rgba(17, 24, 23, 0.14);
+  --panel: #ffffff;
+  --teal: #00a99d;
+  --teal-deep: #00665f;
+  --amber: #d48a2d;
+  --stone: #e7e0d4;
+  --hero-text: #f8fbf9;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+main {
+  overflow: hidden;
+}
+
+.hero {
+  position: relative;
+  min-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px clamp(18px, 4vw, 64px) 26px;
+  color: var(--hero-text);
+  background:
+    linear-gradient(90deg, rgba(6, 11, 10, 0.95) 0%, rgba(6, 11, 10, 0.82) 42%, rgba(6, 11, 10, 0.28) 100%),
+    image-set(url("/hero-workspace.png") type("image/png"));
+  background-position: center;
+  background-size: cover;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 68% 35%, rgba(0, 169, 157, 0.16), transparent 28%),
+    linear-gradient(180deg, rgba(6, 11, 10, 0.1), rgba(6, 11, 10, 0.85));
+}
+
+.siteHeader,
+.heroContent,
+.heroStatus {
+  position: relative;
+  z-index: 1;
+}
+
+.siteHeader {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.brandMark {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.82rem;
+  font-family: var(--font-geist-mono), monospace;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 2.8vw, 30px);
+  color: rgba(248, 251, 249, 0.78);
+  font-size: 0.95rem;
+}
+
+nav a {
+  padding: 10px 0;
+}
+
+nav a:hover,
+nav a:focus-visible {
+  color: #ffffff;
+}
+
+.heroContent {
+  width: min(1180px, 100%);
+  margin: clamp(72px, 12vh, 140px) auto 52px;
+}
+
+.eyebrow,
+.sectionKicker,
+.cardTopline {
+  margin: 0 0 14px;
+  color: var(--teal);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  max-width: 840px;
+  margin: 0;
+  font-size: clamp(4rem, 12vw, 9.7rem);
+  line-height: 0.92;
+  font-weight: 780;
+  letter-spacing: 0;
+}
+
+.heroLead {
+  max-width: 720px;
+  margin: 28px 0 0;
+  color: rgba(248, 251, 249, 0.84);
+  font-size: clamp(1.08rem, 2vw, 1.45rem);
+  line-height: 1.55;
+}
+
+.heroActions,
+.contactActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 34px;
+}
+
+.heroActions a,
+.contactActions a {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-weight: 720;
+}
+
+.primaryAction,
+.contactActions a:first-child {
+  background: var(--teal);
+  color: #031411;
+}
+
+.secondaryAction,
+.contactActions a:not(:first-child) {
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.strengthList {
+  max-width: 760px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 36px;
+}
+
+.strengthList span,
+.skillsGrid span,
+.tagRow span {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(248, 251, 249, 0.82);
+  padding: 9px 12px;
+  font-size: 0.88rem;
+}
+
+.heroStatus {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  padding-top: 20px;
+}
+
+.heroStatus p {
+  max-width: 680px;
+  margin: 0;
+  color: rgba(248, 251, 249, 0.72);
+  line-height: 1.5;
+}
+
+.section {
+  padding: clamp(72px, 10vw, 122px) clamp(18px, 4vw, 64px);
+}
+
+.contentGrid,
+.sectionIntro,
+.projectGrid,
+.skillsGrid,
+.contactInner {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+
+.metricsBand {
+  padding-top: 30px;
+  padding-bottom: 30px;
+  background: var(--ink);
+  color: #f8fbf9;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.metric {
+  min-height: 130px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: var(--ink);
+  padding: 24px;
+}
+
+.metric strong {
+  font-size: clamp(1.45rem, 3vw, 2.4rem);
+  line-height: 1;
+}
+
+.metric span {
+  margin-top: 10px;
+  color: rgba(248, 251, 249, 0.64);
+}
+
+.twoColumn {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.15fr);
+  gap: clamp(34px, 6vw, 96px);
+  align-items: start;
+}
+
+h2 {
+  margin: 0;
+  color: var(--foreground);
+  font-size: clamp(2.05rem, 5vw, 4.7rem);
+  line-height: 1.02;
+  font-weight: 760;
+  letter-spacing: 0;
+}
+
+.bodyCopy p,
+.projectCard p,
+.experienceItem p,
+.contactInner p {
+  color: var(--muted);
+  font-size: 1.02rem;
+  line-height: 1.72;
+}
+
+.bodyCopy p {
+  margin: 0 0 22px;
+}
+
+.aboutSection {
+  background: var(--background);
+}
+
+.workSection {
+  background: #fdfbf6;
+}
+
+.sectionIntro {
+  margin-bottom: 36px;
+}
+
+.sectionIntro h2 {
+  max-width: 860px;
+}
+
+.projectGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.projectCard {
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: clamp(22px, 3vw, 34px);
+}
+
+.projectCard h3,
+.experienceItem h3 {
+  margin: 0;
+  color: var(--foreground);
+  font-size: clamp(1.24rem, 2vw, 1.62rem);
+  line-height: 1.18;
+}
+
+.projectCard p {
+  margin: 18px 0 28px;
+}
+
+.tagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.tagRow span {
+  border-color: rgba(0, 102, 95, 0.18);
+  background: rgba(0, 169, 157, 0.08);
+  color: var(--teal-deep);
+  font-size: 0.78rem;
+}
+
+.experienceSection {
+  background: var(--stone);
+}
+
+.experienceList {
+  display: grid;
+  gap: 1px;
+  background: rgba(17, 24, 23, 0.12);
+}
+
+.experienceItem {
+  background: var(--stone);
+  padding: 28px 0;
+}
+
+.experienceItem p {
+  margin: 12px 0 0;
+}
+
+.skillsSection {
+  background: var(--background);
+}
+
+.compactIntro {
+  margin-bottom: 28px;
+}
+
+.skillsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.skillsGrid span {
+  border-color: rgba(17, 24, 23, 0.12);
+  background: #ffffff;
+  color: var(--foreground);
+  font-size: 0.95rem;
+  padding: 11px 14px;
+}
+
+.contactSection {
+  padding: clamp(72px, 10vw, 118px) clamp(18px, 4vw, 64px);
+  background: var(--ink);
+  color: #f8fbf9;
+}
+
+.contactInner {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1fr);
+  gap: clamp(24px, 6vw, 90px);
+  align-items: end;
+}
+
+.contactInner h2 {
+  color: #f8fbf9;
+}
+
+.contactInner p {
+  max-width: 560px;
+  margin: 0;
+  color: rgba(248, 251, 249, 0.68);
+}
+
+.contactActions {
+  margin: 0;
+  justify-content: flex-start;
+}
+
+.contactActions a:not(:first-child) {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+@media (max-width: 900px) {
+  .hero {
+    min-height: 820px;
+    background-position: 60% center;
+  }
+
+  .siteHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  nav {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .metricsGrid,
+  .projectGrid,
+  .twoColumn,
+  .contactInner {
+    grid-template-columns: 1fr;
+  }
+
+  .metric {
+    min-height: 104px;
+  }
+
+  .projectCard {
+    min-height: 300px;
+  }
+
+  .contactActions {
+    margin-top: 18px;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero {
+    min-height: 760px;
+    padding-top: 18px;
+  }
+
+  .brand span:last-child {
+    max-width: 190px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  nav {
+    gap: 16px;
+    font-size: 0.9rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(3.4rem, 18vw, 5.4rem);
+  }
+
+  .heroLead {
+    font-size: 1rem;
+  }
+
+  .heroActions a,
+  .contactActions a {
+    width: 100%;
+  }
+
+  .strengthList span,
+  .skillsGrid span,
+  .tagRow span {
+    max-width: 100%;
+  }
+}
