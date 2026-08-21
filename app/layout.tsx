@@ -13,32 +13,32 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ahmed Salman | Senior Software Engineer",
+  title: "Ahmed Salman | Mid-Senior Backend Software Engineer",
   description:
-    "Elegant portfolio for Ahmed Salman, a senior software engineer focused on reliable software products, modern web platforms, architecture, and technical leadership.",
+    "Portfolio for Ahmed Salman, a mid-senior backend software engineer specializing in Node.js, TypeScript, microservices, cloud platforms, distributed systems, and performance tuning.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
   },
   openGraph: {
-    title: "Ahmed Salman | Senior Software Engineer",
+    title: "Ahmed Salman | Mid-Senior Backend Software Engineer",
     description:
-      "Senior software engineer building reliable products, scalable platforms, and clean engineering systems.",
+      "Backend software engineer building scalable microservices, distributed systems, API platforms, and production cloud infrastructure.",
     type: "website",
     images: [
       {
         url: "/og.png",
         width: 1200,
         height: 630,
-        alt: "Ahmed Salman senior software engineer portfolio",
+        alt: "Ahmed Salman backend software engineer portfolio",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ahmed Salman | Senior Software Engineer",
+    title: "Ahmed Salman | Mid-Senior Backend Software Engineer",
     description:
-      "Senior software engineer building reliable products, scalable platforms, and clean engineering systems.",
+      "Backend software engineer building scalable microservices, distributed systems, API platforms, and production cloud infrastructure.",
     images: ["/og.png"],
   },
 };

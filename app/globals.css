@@ -314,12 +314,12 @@ h2 {
 
 .projectGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 18px;
 }
 
 .projectCard {
-  min-height: 360px;
+  min-height: 390px;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--line);
@@ -369,8 +369,42 @@ h2 {
   padding: 28px 0;
 }
 
-.experienceItem p {
+.experienceHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.experienceHeader p,
+.educationCard p {
   margin: 12px 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.experienceMeta {
+  min-width: 168px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--teal-deep);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.experienceItem ul {
+  display: grid;
+  gap: 10px;
+  margin: 20px 0 0;
+  padding: 0 0 0 18px;
+}
+
+.experienceItem li {
+  color: var(--muted);
+  line-height: 1.62;
 }
 
 .skillsSection {
@@ -381,6 +415,29 @@ h2 {
   margin-bottom: 28px;
 }
 
+.skillGroupGrid {
+  width: min(1180px, 100%);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin: 0 auto;
+}
+
+.skillGroup {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+  padding: clamp(20px, 3vw, 28px);
+}
+
+.skillGroup h3,
+.educationCard h3 {
+  margin: 0 0 16px;
+  color: var(--foreground);
+  font-size: clamp(1.12rem, 2vw, 1.38rem);
+  line-height: 1.2;
+}
+
 .skillsGrid {
   display: flex;
   flex-wrap: wrap;
@@ -389,10 +446,19 @@ h2 {
 
 .skillsGrid span {
   border-color: rgba(17, 24, 23, 0.12);
-  background: #ffffff;
+  background: #f8f5ee;
   color: var(--foreground);
   font-size: 0.95rem;
   padding: 11px 14px;
+}
+
+.educationSection {
+  background: #fdfbf6;
+}
+
+.educationCard {
+  border-top: 1px solid var(--line);
+  padding-top: 28px;
 }
 
 .contactSection {
@@ -447,7 +513,8 @@ h2 {
   .metricsGrid,
   .projectGrid,
   .twoColumn,
-  .contactInner {
+  .contactInner,
+  .skillGroupGrid {
     grid-template-columns: 1fr;
   }
 
@@ -457,6 +524,15 @@ h2 {
 
   .projectCard {
     min-height: 300px;
+  }
+
+  .experienceHeader {
+    flex-direction: column;
+  }
+
+  .experienceMeta {
+    min-width: 0;
+    text-align: left;
   }
 
   .contactActions {
