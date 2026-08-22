@@ -3,7 +3,7 @@ import { getRuntimeEnv } from "./runtime";
 
 const COOKIE_NAME = "admin_session";
 const SESSION_TTL_SECONDS = 60 * 60 * 12;
-const PASSWORD_ITERATIONS = 210000;
+const PASSWORD_ITERATIONS = 100000;
 
 export async function verifyAdminCredentials(
   username: string,
