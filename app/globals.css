@@ -1006,9 +1006,14 @@ a {
   box-shadow: 0 0 0 3px rgba(55, 224, 255, 0.1);
 }
 
-.contactForm p {
+.contactNotice {
   margin: 0;
+  border: 1px solid rgba(109, 255, 190, 0.28);
+  border-radius: 12px;
+  background: rgba(20, 128, 84, 0.15);
   color: var(--lime);
+  padding: 12px 14px;
+  font-weight: 700;
 }
 
 .cvPdfPage,

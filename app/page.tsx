@@ -31,7 +31,6 @@ export default async function Home() {
             <a href="#projects">Projects</a>
             <a href="#services">Services</a>
             <a href="/cv">My CV</a>
-            <a href="/admin">Admin</a>
             <a href="#contact">Contact</a>
           </nav>
           <a className="navCta" href={`mailto:${profile.email}`}>
@@ -257,7 +256,6 @@ export default async function Home() {
           <a href="#top">Home</a>
           <a href="#projects">Projects</a>
           <a href="/cv">My CV</a>
-          <a href="/admin">Admin</a>
           <a href={`mailto:${profile.email}`}>Contact</a>
         </nav>
         <p>(c) 2026 {profile.name}. Built for scalable backend work.</p>

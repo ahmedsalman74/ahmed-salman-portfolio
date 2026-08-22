@@ -22,8 +22,8 @@ export default async function CvPage() {
           <h1>{profile.name}</h1>
           <p>{profile.role}</p>
         </div>
-        <a className="buttonSecondary" href="/admin">
-          Manage CV
+        <a className="buttonSecondary" href="/">
+          Portfolio
         </a>
       </header>
       <section className="pdfFrame" aria-label="Ahmed Salman CV PDF">
