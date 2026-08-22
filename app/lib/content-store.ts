@@ -1,4 +1,10 @@
-import { defaultPortfolioContent, type PortfolioContent } from "../profile-data";
+import {
+  defaultPortfolioContent,
+  type LinkPageItem,
+  type LinkPageSocial,
+  type PortfolioContent,
+} from "../profile-data";
+import { buildPlatformHref, getLinkPlatform, inferPlatformId } from "../link-platforms";
 import { getRuntimeEnv } from "./runtime";
 
 export type Ticket = {
@@ -185,13 +191,11 @@ function normalizeContent(value: unknown): PortfolioContent {
     linkPage: {
       ...defaultPortfolioContent.linkPage,
       ...(isRecord(input.linkPage) ? input.linkPage : {}),
-      socials: arrayOrDefault(
+      socials: normalizeLinkPageSocials(
         isRecord(input.linkPage) ? input.linkPage.socials : undefined,
-        defaultPortfolioContent.linkPage.socials,
       ),
-      links: arrayOrDefault(
+      links: normalizeLinkPageItems(
         isRecord(input.linkPage) ? input.linkPage.links : undefined,
-        defaultPortfolioContent.linkPage.links,
       ),
     },
     stats: arrayOrDefault(input.stats, defaultPortfolioContent.stats),
@@ -220,6 +224,92 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function arrayOrDefault<T>(value: unknown, fallback: T[]): T[] {
   return Array.isArray(value) ? (value as T[]) : fallback;
+}
+
+function normalizeLinkPageSocials(value: unknown): LinkPageSocial[] {
+  if (!Array.isArray(value)) return defaultPortfolioContent.linkPage.socials;
+
+  return value.map((item, index) => {
+    const base =
+      defaultPortfolioContent.linkPage.socials[index] ??
+      ({
+        label: "Custom",
+        url: "",
+        platform: "custom",
+        username: "",
+        icon: "LN",
+        enabled: true,
+      } satisfies LinkPageSocial);
+    const input = isRecord(item) ? item : {};
+    const platform = inferPlatformId({
+      platform: readString(input.platform, base.platform),
+      label: readString(input.label, base.label),
+      icon: readString(input.icon, base.icon),
+      url: readString(input.url, base.url),
+    });
+    const platformData = getLinkPlatform(platform);
+    const username = readString(input.username, base.username);
+    const url = readString(input.url, base.url) || buildPlatformHref(platform, username);
+
+    return {
+      label: readString(input.label, base.label || platformData.name),
+      url,
+      platform,
+      username,
+      icon: readString(input.icon, base.icon || platformData.iconLabel),
+      enabled: readBoolean(input.enabled, base.enabled),
+    };
+  });
+}
+
+function normalizeLinkPageItems(value: unknown): LinkPageItem[] {
+  if (!Array.isArray(value)) return defaultPortfolioContent.linkPage.links;
+
+  return value.map((item, index) => {
+    const base =
+      defaultPortfolioContent.linkPage.links[index] ??
+      ({
+        title: "New Link",
+        url: "",
+        platform: "custom",
+        username: "",
+        description: "",
+        category: "Links",
+        icon: "LN",
+        enabled: true,
+        featured: false,
+      } satisfies LinkPageItem);
+    const input = isRecord(item) ? item : {};
+    const platform = inferPlatformId({
+      platform: readString(input.platform, base.platform),
+      title: readString(input.title, base.title),
+      icon: readString(input.icon, base.icon),
+      url: readString(input.url, base.url),
+    });
+    const platformData = getLinkPlatform(platform);
+    const username = readString(input.username, base.username);
+    const url = readString(input.url, base.url) || buildPlatformHref(platform, username);
+
+    return {
+      title: readString(input.title, base.title || platformData.name),
+      url,
+      platform,
+      username,
+      description: readString(input.description, base.description),
+      category: readString(input.category, base.category),
+      icon: readString(input.icon, base.icon || platformData.iconLabel),
+      enabled: readBoolean(input.enabled, base.enabled),
+      featured: readBoolean(input.featured, base.featured),
+    };
+  });
+}
+
+function readString(value: unknown, fallback: string) {
+  return typeof value === "string" ? value : fallback;
+}
+
+function readBoolean(value: unknown, fallback: boolean) {
+  return typeof value === "boolean" ? value : fallback;
 }
 
 function cleanText(value: string, maxLength: number) {

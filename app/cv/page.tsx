@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getPortfolioContent } from "../lib/content-store";
 
 export const dynamic = "force-dynamic";
@@ -14,17 +15,17 @@ export default async function CvPage() {
   return (
     <main className="cvPdfPage">
       <header className="cvPdfHeader">
-        <a className="backLink" href="/">
+        <Link className="backLink" href="/">
           Back to portfolio
-        </a>
+        </Link>
         <div>
           <p className="kicker">PDF CV</p>
           <h1>{profile.name}</h1>
           <p>{profile.role}</p>
         </div>
-        <a className="buttonSecondary" href="/">
+        <Link className="buttonSecondary" href="/">
           Portfolio
-        </a>
+        </Link>
       </header>
       <section className="pdfFrame" aria-label="Ahmed Salman CV PDF">
         <iframe title="Ahmed Salman CV PDF" src="/api/cv/file" />

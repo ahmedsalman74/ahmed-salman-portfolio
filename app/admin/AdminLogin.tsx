@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 
 export default function AdminLogin() {
@@ -29,9 +30,9 @@ export default function AdminLogin() {
 
   return (
     <section className="adminLogin">
-      <a className="backLink" href="/">
+      <Link className="backLink" href="/">
         Back to portfolio
-      </a>
+      </Link>
       <form onSubmit={handleSubmit}>
         <p className="kicker">SaaS Admin</p>
         <h1>Portfolio Control Room</h1>

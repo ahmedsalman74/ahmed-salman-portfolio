@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import { notFound } from "next/navigation";
+import PlatformIcon from "../PlatformIcon";
 import { getPortfolioContent } from "../lib/content-store";
+import { getPlatformColor, inferPlatformId } from "../link-platforms";
 import ShareButton from "./ShareButton";
 
 export const dynamic = "force-dynamic";
@@ -67,8 +69,9 @@ export default async function LinksPage() {
                 rel={isExternal(item.url) ? "noreferrer" : undefined}
                 target={isExternal(item.url) ? "_blank" : undefined}
                 aria-label={item.label}
+                style={platformStyle(inferPlatformId(item))}
               >
-                {item.icon || item.label.slice(0, 2)}
+                <PlatformIcon platformId={inferPlatformId(item)} fallback={item.icon || item.label.slice(0, 2)} />
               </a>
             ))}
           </nav>
@@ -99,12 +102,16 @@ function LinkTile({
   item: {
     title: string;
     url: string;
+    platform?: string;
+    username?: string;
     description: string;
     category: string;
     icon: string;
   };
   featured?: boolean;
 }) {
+  const platformId = inferPlatformId(item);
+
   return (
     <a
       className={featured ? "linksTile linksTileFeatured" : "linksTile"}
@@ -112,7 +119,9 @@ function LinkTile({
       rel={isExternal(item.url) ? "noreferrer" : undefined}
       target={isExternal(item.url) ? "_blank" : undefined}
     >
-      <span className="linksTileIcon">{item.icon || item.title.slice(0, 2)}</span>
+      <span className="linksTileIcon" style={platformStyle(platformId)}>
+        <PlatformIcon platformId={platformId} fallback={item.icon || item.title.slice(0, 2)} />
+      </span>
       <span>
         {item.category ? <em>{item.category}</em> : null}
         <strong>{item.title}</strong>
@@ -150,4 +159,8 @@ function safeTheme(value: string) {
 
 function safeColor(value: string, fallback: string) {
   return /^#[0-9a-fA-F]{6}$/.test(value) ? value : fallback;
+}
+
+function platformStyle(platformId: string) {
+  return { "--platform-color": getPlatformColor(platformId) } as CSSProperties;
 }

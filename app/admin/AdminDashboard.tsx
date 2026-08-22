@@ -1,6 +1,14 @@
 "use client";
 
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState, type CSSProperties } from "react";
+import PlatformIcon from "@/app/PlatformIcon";
+import {
+  buildPlatformHref,
+  getLinkPlatform,
+  inferPlatformId,
+  LINK_PLATFORM_CATEGORIES,
+  LINK_PLATFORMS,
+} from "@/app/link-platforms";
 import type { PortfolioContent } from "@/app/profile-data";
 
 type Ticket = {
@@ -319,48 +327,78 @@ export default function AdminDashboard() {
           </AdminPanel>
 
           <AdminPanel title="Social Icons">
-            {content.linkPage.socials.map((social, index) => (
-              <div className="repeatBlock" key={`${social.label}-${index}`}>
-                <Checkbox label="Enabled" checked={social.enabled} onChange={(value) => updateSocial(index, "enabled", value)} />
-                <Field label="Label" value={social.label} onChange={(value) => updateSocial(index, "label", value)} />
-                <Field label="Icon text" value={social.icon} onChange={(value) => updateSocial(index, "icon", value)} />
-                <Field label="URL" value={social.url} onChange={(value) => updateSocial(index, "url", value)} />
-                <button className="dangerButton" onClick={() => setContent({ ...content, linkPage: { ...content.linkPage, socials: content.linkPage.socials.filter((_, itemIndex) => itemIndex !== index) } })}>
-                  Remove social
-                </button>
-              </div>
-            ))}
-            <button className="smallButton" onClick={() => setContent({ ...content, linkPage: { ...content.linkPage, socials: [...content.linkPage.socials, { label: "New Social", url: "https://", icon: "NS", enabled: true }] } })}>
+            {content.linkPage.socials.map((social, index) => {
+              const platformId = inferPlatformId(social);
+              const platform = getLinkPlatform(platformId);
+
+              return (
+                <div className="repeatBlock" key={`${social.label}-${index}`}>
+                  <div className="adminInlineActions">
+                    <Checkbox label="Enabled" checked={social.enabled} onChange={(value) => updateSocial(index, "enabled", value)} />
+                    <PlatformPreview platformId={platformId} fallback={social.icon} />
+                  </div>
+                  <PlatformSelect label="Platform" value={platformId} onChange={(value) => updateSocialPlatform(index, value)} />
+                  <Field label="Label shown to visitors" value={social.label} onChange={(value) => updateSocial(index, "label", value)} />
+                  <Field
+                    label="Username or full URL"
+                    value={social.username || social.url}
+                    placeholder={platform.placeholder}
+                    onChange={(value) => updateSocialDestination(index, value)}
+                  />
+                  <p className="adminNote compactNote">
+                    Generated link: {social.url || "Add a username or URL"}
+                  </p>
+                  <button className="dangerButton" onClick={() => setContent({ ...content, linkPage: { ...content.linkPage, socials: content.linkPage.socials.filter((_, itemIndex) => itemIndex !== index) } })}>
+                    Remove social
+                  </button>
+                </div>
+              );
+            })}
+            <button className="smallButton" onClick={addSocial}>
               Add social
             </button>
           </AdminPanel>
 
           <AdminPanel title="Profile Links">
-            {content.linkPage.links.map((link, index) => (
-              <div className="repeatBlock" key={`${link.title}-${index}`}>
-                <div className="adminInlineActions">
-                  <Checkbox label="Enabled" checked={link.enabled} onChange={(value) => updateLink(index, "enabled", value)} />
-                  <Checkbox label="Featured" checked={link.featured} onChange={(value) => updateLink(index, "featured", value)} />
+            {content.linkPage.links.map((link, index) => {
+              const platformId = inferPlatformId(link);
+              const platform = getLinkPlatform(platformId);
+
+              return (
+                <div className="repeatBlock" key={`${link.title}-${index}`}>
+                  <div className="adminInlineActions">
+                    <Checkbox label="Enabled" checked={link.enabled} onChange={(value) => updateLink(index, "enabled", value)} />
+                    <Checkbox label="Featured" checked={link.featured} onChange={(value) => updateLink(index, "featured", value)} />
+                    <PlatformPreview platformId={platformId} fallback={link.icon} />
+                  </div>
+                  <PlatformSelect label="Platform" value={platformId} onChange={(value) => updateLinkPlatform(index, value)} />
+                  <Field label="Label / button text" value={link.title} onChange={(value) => updateLink(index, "title", value)} />
+                  <Field
+                    label="Username or full URL"
+                    value={link.username || link.url}
+                    placeholder={platform.placeholder}
+                    onChange={(value) => updateLinkDestination(index, value)}
+                  />
+                  <Field label="Category" value={link.category} onChange={(value) => updateLink(index, "category", value)} />
+                  <TextArea label="Description" value={link.description} onChange={(value) => updateLink(index, "description", value)} />
+                  <p className="adminNote compactNote">
+                    Generated link: {link.url || "Add a username or URL"}
+                  </p>
+                  <div className="adminInlineActions">
+                    <button className="smallButton" disabled={index === 0} onClick={() => moveLink(index, -1)}>
+                      Move up
+                    </button>
+                    <button className="smallButton" disabled={index === content.linkPage.links.length - 1} onClick={() => moveLink(index, 1)}>
+                      Move down
+                    </button>
+                    <button className="dangerButton" onClick={() => setContent({ ...content, linkPage: { ...content.linkPage, links: content.linkPage.links.filter((_, itemIndex) => itemIndex !== index) } })}>
+                      Remove link
+                    </button>
+                  </div>
                 </div>
-                <Field label="Title" value={link.title} onChange={(value) => updateLink(index, "title", value)} />
-                <Field label="URL" value={link.url} onChange={(value) => updateLink(index, "url", value)} />
-                <Field label="Category" value={link.category} onChange={(value) => updateLink(index, "category", value)} />
-                <Field label="Icon text" value={link.icon} onChange={(value) => updateLink(index, "icon", value)} />
-                <TextArea label="Description" value={link.description} onChange={(value) => updateLink(index, "description", value)} />
-                <div className="adminInlineActions">
-                  <button className="smallButton" disabled={index === 0} onClick={() => moveLink(index, -1)}>
-                    Move up
-                  </button>
-                  <button className="smallButton" disabled={index === content.linkPage.links.length - 1} onClick={() => moveLink(index, 1)}>
-                    Move down
-                  </button>
-                  <button className="dangerButton" onClick={() => setContent({ ...content, linkPage: { ...content.linkPage, links: content.linkPage.links.filter((_, itemIndex) => itemIndex !== index) } })}>
-                    Remove link
-                  </button>
-                </div>
-              </div>
-            ))}
-            <button className="smallButton" onClick={() => setContent({ ...content, linkPage: { ...content.linkPage, links: [...content.linkPage.links, { title: "New Link", url: "https://", description: "Describe this link.", category: "Links", icon: "NL", enabled: true, featured: false }] } })}>
+              );
+            })}
+            <button className="smallButton" onClick={addProfileLink}>
               Add link
             </button>
           </AdminPanel>
@@ -446,6 +484,47 @@ export default function AdminDashboard() {
     });
   }
 
+  function updateSocialFields(
+    index: number,
+    patch: Partial<PortfolioContent["linkPage"]["socials"][number]>,
+  ) {
+    setContent({
+      ...content,
+      linkPage: {
+        ...content.linkPage,
+        socials: content.linkPage.socials.map((item, itemIndex) =>
+          itemIndex === index ? { ...item, ...patch } : item,
+        ),
+      },
+    });
+  }
+
+  function updateSocialPlatform(index: number, platformId: string) {
+    const current = content.linkPage.socials[index];
+    const oldPlatform = getLinkPlatform(inferPlatformId(current));
+    const platform = getLinkPlatform(platformId);
+    const username = current.username || "";
+
+    updateSocialFields(index, {
+      platform: platform.id,
+      username,
+      icon: platform.iconLabel,
+      label: shouldReplaceLabel(current.label, oldPlatform.name, "New Social")
+        ? platform.name
+        : current.label,
+      url: username ? buildPlatformHref(platform.id, username) : current.url,
+    });
+  }
+
+  function updateSocialDestination(index: number, value: string) {
+    const current = content.linkPage.socials[index];
+    const platformId = inferPlatformId(current);
+    updateSocialFields(index, {
+      username: value,
+      url: buildPlatformHref(platformId, value),
+    });
+  }
+
   function updateLink<K extends keyof PortfolioContent["linkPage"]["links"][number]>(
     index: number,
     key: K,
@@ -458,6 +537,93 @@ export default function AdminDashboard() {
         links: content.linkPage.links.map((item, itemIndex) =>
           itemIndex === index ? { ...item, [key]: value } : item,
         ),
+      },
+    });
+  }
+
+  function updateLinkFields(
+    index: number,
+    patch: Partial<PortfolioContent["linkPage"]["links"][number]>,
+  ) {
+    setContent({
+      ...content,
+      linkPage: {
+        ...content.linkPage,
+        links: content.linkPage.links.map((item, itemIndex) =>
+          itemIndex === index ? { ...item, ...patch } : item,
+        ),
+      },
+    });
+  }
+
+  function updateLinkPlatform(index: number, platformId: string) {
+    const current = content.linkPage.links[index];
+    const oldPlatform = getLinkPlatform(inferPlatformId(current));
+    const platform = getLinkPlatform(platformId);
+    const username = current.username || "";
+
+    updateLinkFields(index, {
+      platform: platform.id,
+      username,
+      icon: platform.iconLabel,
+      title: shouldReplaceLabel(current.title, oldPlatform.name, "New Link")
+        ? platform.name
+        : current.title,
+      category: current.category || platform.category,
+      url: username ? buildPlatformHref(platform.id, username) : current.url,
+    });
+  }
+
+  function updateLinkDestination(index: number, value: string) {
+    const current = content.linkPage.links[index];
+    const platformId = inferPlatformId(current);
+    updateLinkFields(index, {
+      username: value,
+      url: buildPlatformHref(platformId, value),
+    });
+  }
+
+  function addSocial() {
+    const platform = getLinkPlatform("x");
+    setContent({
+      ...content,
+      linkPage: {
+        ...content.linkPage,
+        socials: [
+          ...content.linkPage.socials,
+          {
+            label: platform.name,
+            url: "",
+            platform: platform.id,
+            username: "",
+            icon: platform.iconLabel,
+            enabled: true,
+          },
+        ],
+      },
+    });
+  }
+
+  function addProfileLink() {
+    const platform = getLinkPlatform("website");
+    setContent({
+      ...content,
+      linkPage: {
+        ...content.linkPage,
+        links: [
+          ...content.linkPage.links,
+          {
+            title: platform.name,
+            url: "",
+            platform: platform.id,
+            username: "",
+            description: "Describe this link.",
+            category: platform.category,
+            icon: platform.iconLabel,
+            enabled: true,
+            featured: false,
+          },
+        ],
       },
     });
   }
@@ -557,6 +723,10 @@ export default function AdminDashboard() {
       ),
     });
   }
+
+  function shouldReplaceLabel(value: string, oldPlatformName: string, emptyLabel: string) {
+    return !value || value === emptyLabel || value === oldPlatformName || value === "Custom";
+  }
 }
 
 function AdminPanel({
@@ -577,16 +747,22 @@ function AdminPanel({
 function Field({
   label,
   value,
+  placeholder,
   onChange,
 }: {
   label: string;
   value: string;
+  placeholder?: string;
   onChange: (value: string) => void;
 }) {
   return (
     <label className="adminField">
       {label}
-      <input value={value} onChange={(event) => onChange(event.target.value)} />
+      <input
+        value={value}
+        placeholder={placeholder}
+        onChange={(event) => onChange(event.target.value)}
+      />
     </label>
   );
 }
@@ -630,6 +806,57 @@ function Select({
         ))}
       </select>
     </label>
+  );
+}
+
+function PlatformSelect({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const selected = LINK_PLATFORMS.some((platform) => platform.id === value)
+    ? value
+    : "custom";
+
+  return (
+    <label className="adminField">
+      {label}
+      <select value={selected} onChange={(event) => onChange(event.target.value)}>
+        {LINK_PLATFORM_CATEGORIES.map((category) => (
+          <optgroup label={category} key={category}>
+            {LINK_PLATFORMS.filter((platform) => platform.category === category).map((platform) => (
+              <option key={platform.id} value={platform.id}>
+                {platform.name}
+              </option>
+            ))}
+          </optgroup>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function PlatformPreview({
+  platformId,
+  fallback,
+}: {
+  platformId: string;
+  fallback?: string;
+}) {
+  const platform = getLinkPlatform(platformId);
+  const style = { "--platform-color": platform.brandColor } as CSSProperties;
+
+  return (
+    <span className="platformPreview">
+      <span className="platformPreviewIcon" style={style}>
+        <PlatformIcon platformId={platformId} fallback={fallback} />
+      </span>
+      <span>{platform.name}</span>
+    </span>
   );
 }
 

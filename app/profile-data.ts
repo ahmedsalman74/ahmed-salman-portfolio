@@ -64,6 +64,8 @@ export type ProcessItem = {
 export type LinkPageSocial = {
   label: string;
   url: string;
+  platform: string;
+  username: string;
   icon: string;
   enabled: boolean;
 };
@@ -71,6 +73,8 @@ export type LinkPageSocial = {
 export type LinkPageItem = {
   title: string;
   url: string;
+  platform: string;
+  username: string;
   description: string;
   category: string;
   icon: string;
@@ -319,18 +323,24 @@ export const defaultPortfolioContent: PortfolioContent = {
       {
         label: "GitHub",
         url: "https://github.com/ahmedsalman74",
+        platform: "github",
+        username: "ahmedsalman74",
         icon: "GH",
         enabled: true,
       },
       {
         label: "LinkedIn",
         url: "https://www.linkedin.com/in/ahmed-salman74",
+        platform: "linkedin",
+        username: "ahmed-salman74",
         icon: "IN",
         enabled: true,
       },
       {
         label: "Email",
         url: "mailto:ahmedsapry486@gmail.com",
+        platform: "email",
+        username: "ahmedsapry486@gmail.com",
         icon: "@",
         enabled: true,
       },
@@ -339,6 +349,8 @@ export const defaultPortfolioContent: PortfolioContent = {
       {
         title: "Portfolio",
         url: "/",
+        platform: "portfolio",
+        username: "/",
         description: "Explore my projects, experience, and backend services.",
         category: "Featured",
         icon: "PF",
@@ -348,6 +360,8 @@ export const defaultPortfolioContent: PortfolioContent = {
       {
         title: "Preview CV",
         url: "/cv",
+        platform: "portfolio",
+        username: "/cv",
         description: "Open my CV as a PDF page.",
         category: "Featured",
         icon: "CV",
@@ -357,6 +371,8 @@ export const defaultPortfolioContent: PortfolioContent = {
       {
         title: "GitHub",
         url: "https://github.com/ahmedsalman74",
+        platform: "github",
+        username: "ahmedsalman74",
         description: "Source code, repositories, and engineering work.",
         category: "Social",
         icon: "GH",
@@ -366,6 +382,8 @@ export const defaultPortfolioContent: PortfolioContent = {
       {
         title: "LinkedIn",
         url: "https://www.linkedin.com/in/ahmed-salman74",
+        platform: "linkedin",
+        username: "ahmed-salman74",
         description: "Professional profile and experience.",
         category: "Social",
         icon: "IN",
@@ -375,6 +393,8 @@ export const defaultPortfolioContent: PortfolioContent = {
       {
         title: "Book a call",
         url: "mailto:ahmedsapry486@gmail.com",
+        platform: "email",
+        username: "ahmedsapry486@gmail.com",
         description: "Reach me for backend roles, architecture, or consulting.",
         category: "Contact",
         icon: "@",
