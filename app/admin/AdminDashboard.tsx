@@ -18,6 +18,7 @@ type Tab =
   | "projects"
   | "experience"
   | "skills"
+  | "links"
   | "cv"
   | "tickets";
 
@@ -131,6 +132,9 @@ export default function AdminDashboard() {
           <a className="buttonSecondary" href="/cv" target="_blank">
             View CV
           </a>
+          <a className="buttonSecondary" href="/links" target="_blank">
+            View links
+          </a>
           <button className="buttonSecondary" onClick={logout}>
             Log out
           </button>
@@ -149,6 +153,9 @@ export default function AdminDashboard() {
         </button>
         <button className={tab === "skills" ? "active" : ""} onClick={() => setTab("skills")}>
           Skills
+        </button>
+        <button className={tab === "links" ? "active" : ""} onClick={() => setTab("links")}>
+          Links
         </button>
         <button className={tab === "cv" ? "active" : ""} onClick={() => setTab("cv")}>
           CV PDF
@@ -286,6 +293,80 @@ export default function AdminDashboard() {
         </div>
       ) : null}
 
+      {tab === "links" ? (
+        <div className="adminGrid">
+          <AdminPanel title="Links Profile">
+            <Checkbox label="Enable links page" checked={content.linkPage.enabled} onChange={(value) => updateLinkPage("enabled", value)} />
+            <Field label="Handle" value={content.linkPage.handle} onChange={(value) => updateLinkPage("handle", value)} />
+            <Field label="Headline" value={content.linkPage.headline} onChange={(value) => updateLinkPage("headline", value)} />
+            <TextArea label="Bio" value={content.linkPage.bio} onChange={(value) => updateLinkPage("bio", value)} />
+            <Field label="Avatar initials" value={content.linkPage.avatarText} onChange={(value) => updateLinkPage("avatarText", value)} />
+            <Field label="Avatar image URL" value={content.linkPage.avatarImage} onChange={(value) => updateLinkPage("avatarImage", value)} />
+            <Field label="Status text" value={content.linkPage.status} onChange={(value) => updateLinkPage("status", value)} />
+            <Field label="Location" value={content.linkPage.location} onChange={(value) => updateLinkPage("location", value)} />
+            <Checkbox label="Show verified badge" checked={content.linkPage.showVerifiedBadge} onChange={(value) => updateLinkPage("showVerifiedBadge", value)} />
+            <Checkbox label="Show share button" checked={content.linkPage.showShareButton} onChange={(value) => updateLinkPage("showShareButton", value)} />
+          </AdminPanel>
+
+          <AdminPanel title="Links Appearance">
+            <Select label="Theme" value={content.linkPage.theme} options={["midnight", "aurora", "minimal", "carbon"]} onChange={(value) => updateLinkPage("theme", value)} />
+            <Select label="Layout" value={content.linkPage.layout} options={["stack", "cards"]} onChange={(value) => updateLinkPage("layout", value)} />
+            <Field label="Accent color" value={content.linkPage.accent} onChange={(value) => updateLinkPage("accent", value)} />
+            <Field label="Background color" value={content.linkPage.background} onChange={(value) => updateLinkPage("background", value)} />
+            <p className="adminNote">
+              Use hex colors like #37e0ff. The page stays hidden from the portfolio navigation and is available only by direct URL.
+            </p>
+          </AdminPanel>
+
+          <AdminPanel title="Social Icons">
+            {content.linkPage.socials.map((social, index) => (
+              <div className="repeatBlock" key={`${social.label}-${index}`}>
+                <Checkbox label="Enabled" checked={social.enabled} onChange={(value) => updateSocial(index, "enabled", value)} />
+                <Field label="Label" value={social.label} onChange={(value) => updateSocial(index, "label", value)} />
+                <Field label="Icon text" value={social.icon} onChange={(value) => updateSocial(index, "icon", value)} />
+                <Field label="URL" value={social.url} onChange={(value) => updateSocial(index, "url", value)} />
+                <button className="dangerButton" onClick={() => setContent({ ...content, linkPage: { ...content.linkPage, socials: content.linkPage.socials.filter((_, itemIndex) => itemIndex !== index) } })}>
+                  Remove social
+                </button>
+              </div>
+            ))}
+            <button className="smallButton" onClick={() => setContent({ ...content, linkPage: { ...content.linkPage, socials: [...content.linkPage.socials, { label: "New Social", url: "https://", icon: "NS", enabled: true }] } })}>
+              Add social
+            </button>
+          </AdminPanel>
+
+          <AdminPanel title="Profile Links">
+            {content.linkPage.links.map((link, index) => (
+              <div className="repeatBlock" key={`${link.title}-${index}`}>
+                <div className="adminInlineActions">
+                  <Checkbox label="Enabled" checked={link.enabled} onChange={(value) => updateLink(index, "enabled", value)} />
+                  <Checkbox label="Featured" checked={link.featured} onChange={(value) => updateLink(index, "featured", value)} />
+                </div>
+                <Field label="Title" value={link.title} onChange={(value) => updateLink(index, "title", value)} />
+                <Field label="URL" value={link.url} onChange={(value) => updateLink(index, "url", value)} />
+                <Field label="Category" value={link.category} onChange={(value) => updateLink(index, "category", value)} />
+                <Field label="Icon text" value={link.icon} onChange={(value) => updateLink(index, "icon", value)} />
+                <TextArea label="Description" value={link.description} onChange={(value) => updateLink(index, "description", value)} />
+                <div className="adminInlineActions">
+                  <button className="smallButton" disabled={index === 0} onClick={() => moveLink(index, -1)}>
+                    Move up
+                  </button>
+                  <button className="smallButton" disabled={index === content.linkPage.links.length - 1} onClick={() => moveLink(index, 1)}>
+                    Move down
+                  </button>
+                  <button className="dangerButton" onClick={() => setContent({ ...content, linkPage: { ...content.linkPage, links: content.linkPage.links.filter((_, itemIndex) => itemIndex !== index) } })}>
+                    Remove link
+                  </button>
+                </div>
+              </div>
+            ))}
+            <button className="smallButton" onClick={() => setContent({ ...content, linkPage: { ...content.linkPage, links: [...content.linkPage.links, { title: "New Link", url: "https://", description: "Describe this link.", category: "Links", icon: "NL", enabled: true, featured: false }] } })}>
+              Add link
+            </button>
+          </AdminPanel>
+        </div>
+      ) : null}
+
       {tab === "cv" ? (
         <AdminPanel title="CV PDF">
           <p className="adminNote">
@@ -335,6 +416,66 @@ export default function AdminDashboard() {
       </div>
     </section>
   );
+
+  function updateLinkPage<K extends keyof PortfolioContent["linkPage"]>(
+    key: K,
+    value: PortfolioContent["linkPage"][K],
+  ) {
+    setContent({
+      ...content,
+      linkPage: {
+        ...content.linkPage,
+        [key]: value,
+      },
+    });
+  }
+
+  function updateSocial<K extends keyof PortfolioContent["linkPage"]["socials"][number]>(
+    index: number,
+    key: K,
+    value: PortfolioContent["linkPage"]["socials"][number][K],
+  ) {
+    setContent({
+      ...content,
+      linkPage: {
+        ...content.linkPage,
+        socials: content.linkPage.socials.map((item, itemIndex) =>
+          itemIndex === index ? { ...item, [key]: value } : item,
+        ),
+      },
+    });
+  }
+
+  function updateLink<K extends keyof PortfolioContent["linkPage"]["links"][number]>(
+    index: number,
+    key: K,
+    value: PortfolioContent["linkPage"]["links"][number][K],
+  ) {
+    setContent({
+      ...content,
+      linkPage: {
+        ...content.linkPage,
+        links: content.linkPage.links.map((item, itemIndex) =>
+          itemIndex === index ? { ...item, [key]: value } : item,
+        ),
+      },
+    });
+  }
+
+  function moveLink(index: number, direction: -1 | 1) {
+    const nextIndex = index + direction;
+    if (nextIndex < 0 || nextIndex >= content.linkPage.links.length) return;
+    const links = [...content.linkPage.links];
+    const [item] = links.splice(index, 1);
+    links.splice(nextIndex, 0, item);
+    setContent({
+      ...content,
+      linkPage: {
+        ...content.linkPage,
+        links,
+      },
+    });
+  }
 
   function updateStat(index: number, key: "value" | "label", value: string) {
     setContent({
@@ -463,6 +604,52 @@ function TextArea({
     <label className="adminField">
       {label}
       <textarea value={value} onChange={(event) => onChange(event.target.value)} />
+    </label>
+  );
+}
+
+function Select({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  options: string[];
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="adminField">
+      {label}
+      <select value={value} onChange={(event) => onChange(event.target.value)}>
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function Checkbox({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  return (
+    <label className="adminCheck">
+      <input
+        checked={checked}
+        type="checkbox"
+        onChange={(event) => onChange(event.target.checked)}
+      />
+      <span>{label}</span>
     </label>
   );
 }

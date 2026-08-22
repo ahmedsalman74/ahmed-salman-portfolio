@@ -182,6 +182,18 @@ function normalizeContent(value: unknown): PortfolioContent {
       ...defaultPortfolioContent.education,
       ...(isRecord(input.education) ? input.education : {}),
     },
+    linkPage: {
+      ...defaultPortfolioContent.linkPage,
+      ...(isRecord(input.linkPage) ? input.linkPage : {}),
+      socials: arrayOrDefault(
+        isRecord(input.linkPage) ? input.linkPage.socials : undefined,
+        defaultPortfolioContent.linkPage.socials,
+      ),
+      links: arrayOrDefault(
+        isRecord(input.linkPage) ? input.linkPage.links : undefined,
+        defaultPortfolioContent.linkPage.links,
+      ),
+    },
     stats: arrayOrDefault(input.stats, defaultPortfolioContent.stats),
     focusAreas: arrayOrDefault(
       input.focusAreas,

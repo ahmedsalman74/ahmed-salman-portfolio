@@ -61,6 +61,42 @@ export type ProcessItem = {
   text: string;
 };
 
+export type LinkPageSocial = {
+  label: string;
+  url: string;
+  icon: string;
+  enabled: boolean;
+};
+
+export type LinkPageItem = {
+  title: string;
+  url: string;
+  description: string;
+  category: string;
+  icon: string;
+  enabled: boolean;
+  featured: boolean;
+};
+
+export type LinkPage = {
+  enabled: boolean;
+  handle: string;
+  headline: string;
+  bio: string;
+  avatarText: string;
+  avatarImage: string;
+  status: string;
+  location: string;
+  theme: string;
+  accent: string;
+  background: string;
+  layout: string;
+  showVerifiedBadge: boolean;
+  showShareButton: boolean;
+  socials: LinkPageSocial[];
+  links: LinkPageItem[];
+};
+
 export type PortfolioContent = {
   profile: Profile;
   hero: HeroContent;
@@ -73,6 +109,7 @@ export type PortfolioContent = {
   skillGroups: SkillGroup[];
   education: Education;
   process: ProcessItem[];
+  linkPage: LinkPage;
 };
 
 export const defaultPortfolioContent: PortfolioContent = {
@@ -262,6 +299,90 @@ export const defaultPortfolioContent: PortfolioContent = {
         "Move confidently into production with cloud infrastructure, monitoring, and practical reliability work.",
     },
   ],
+  linkPage: {
+    enabled: true,
+    handle: "ahmedsalman74",
+    headline: "Ahmed Salman",
+    bio:
+      "Backend software engineer building scalable APIs, microservices, and cloud systems.",
+    avatarText: "AS",
+    avatarImage: "",
+    status: "Available for backend roles and consulting",
+    location: "Dammam, KSA / Remote",
+    theme: "midnight",
+    accent: "#37e0ff",
+    background: "#05070b",
+    layout: "stack",
+    showVerifiedBadge: true,
+    showShareButton: true,
+    socials: [
+      {
+        label: "GitHub",
+        url: "https://github.com/ahmedsalman74",
+        icon: "GH",
+        enabled: true,
+      },
+      {
+        label: "LinkedIn",
+        url: "https://www.linkedin.com/in/ahmed-salman74",
+        icon: "IN",
+        enabled: true,
+      },
+      {
+        label: "Email",
+        url: "mailto:ahmedsapry486@gmail.com",
+        icon: "@",
+        enabled: true,
+      },
+    ],
+    links: [
+      {
+        title: "Portfolio",
+        url: "/",
+        description: "Explore my projects, experience, and backend services.",
+        category: "Featured",
+        icon: "PF",
+        enabled: true,
+        featured: true,
+      },
+      {
+        title: "Preview CV",
+        url: "/cv",
+        description: "Open my CV as a PDF page.",
+        category: "Featured",
+        icon: "CV",
+        enabled: true,
+        featured: true,
+      },
+      {
+        title: "GitHub",
+        url: "https://github.com/ahmedsalman74",
+        description: "Source code, repositories, and engineering work.",
+        category: "Social",
+        icon: "GH",
+        enabled: true,
+        featured: false,
+      },
+      {
+        title: "LinkedIn",
+        url: "https://www.linkedin.com/in/ahmed-salman74",
+        description: "Professional profile and experience.",
+        category: "Social",
+        icon: "IN",
+        enabled: true,
+        featured: false,
+      },
+      {
+        title: "Book a call",
+        url: "mailto:ahmedsapry486@gmail.com",
+        description: "Reach me for backend roles, architecture, or consulting.",
+        category: "Contact",
+        icon: "@",
+        enabled: true,
+        featured: false,
+      },
+    ],
+  },
 };
 
 export const profile = defaultPortfolioContent.profile;
