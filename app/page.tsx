@@ -1,31 +1,22 @@
-import {
-  experience,
-  focusAreas,
-  heroStats,
-  profile,
-  projects,
-  services,
-} from "./profile-data";
+import ContactForm from "./ContactForm";
+import { getPortfolioContent } from "./lib/content-store";
 
-const process = [
-  {
-    step: "01",
-    title: "Define & Architect",
-    text: "Map the product flow, service boundaries, data model, and delivery risks before code starts.",
-  },
-  {
-    step: "02",
-    title: "Build & Optimize",
-    text: "Ship modular backend services with clean APIs, database tuning, caching, and strong test coverage.",
-  },
-  {
-    step: "03",
-    title: "Deploy & Support",
-    text: "Move confidently into production with cloud infrastructure, monitoring, and practical reliability work.",
-  },
-];
+export const dynamic = "force-dynamic";
 
-export default function Home() {
+export default async function Home() {
+  const content = await getPortfolioContent();
+  const {
+    profile,
+    hero,
+    stats,
+    trusted,
+    projects,
+    services,
+    process,
+    focusAreas,
+    experience,
+  } = content;
+
   return (
     <main className="siteShell">
       <section className="heroSurface" id="top" aria-labelledby="hero-title">
@@ -33,13 +24,14 @@ export default function Home() {
         <div className="ambient ambientTwo" />
 
         <header className="navPill" aria-label="Primary navigation">
-          <a className="brand" href="#top" aria-label="Ahmed Salman home">
-            AHMED SALMAN
+          <a className="brand" href="#top" aria-label={`${profile.name} home`}>
+            {profile.name.toUpperCase()}
           </a>
           <nav>
             <a href="#projects">Projects</a>
             <a href="#services">Services</a>
             <a href="/cv">My CV</a>
+            <a href="/admin">Admin</a>
             <a href="#contact">Contact</a>
           </nav>
           <a className="navCta" href={`mailto:${profile.email}`}>
@@ -49,15 +41,11 @@ export default function Home() {
 
         <div className="heroGrid">
           <div className="heroCopy reveal">
-            <p className="kicker">{profile.role}</p>
+            <p className="kicker">{hero.kicker}</p>
             <h1 id="hero-title">
-              Hi, I am Ahmed, building{" "}
-              <span>backend systems that scale.</span>
+              {hero.title} <span>{hero.highlight}</span>
             </h1>
-            <p>
-              I turn complex product requirements into fast, reliable APIs,
-              microservices, and distributed systems for high-traffic products.
-            </p>
+            <p>{hero.lead}</p>
             <div className="heroActions">
               <a className="buttonPrimary" href={`mailto:${profile.email}`}>
                 Let us connect
@@ -68,14 +56,17 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="heroVisual reveal" aria-label="Ahmed Salman engineering summary">
+          <div
+            className="heroVisual reveal"
+            aria-label={`${profile.name} engineering summary`}
+          >
             <div className="orbitRing" />
             <div className="portraitCard">
               <div className="avatarMark">AS</div>
               <p>Backend Engineer</p>
               <span>Node.js / TypeScript / Cloud</span>
             </div>
-            {heroStats.map((stat, index) => (
+            {stats.map((stat, index) => (
               <div className={`floatStat stat${index + 1}`} key={stat.label}>
                 <strong>{stat.value}</strong>
                 <span>{stat.label}</span>
@@ -84,13 +75,14 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="trustedStrip reveal" aria-label="Experience across companies and products">
+        <div
+          className="trustedStrip reveal"
+          aria-label="Experience across companies and products"
+        >
           <span>Experience across</span>
-          <strong>V For Technology</strong>
-          <strong>Zetaton</strong>
-          <strong>CustEx</strong>
-          <strong>Panda KSA</strong>
-          <strong>Harmony</strong>
+          {trusted.map((item) => (
+            <strong key={item}>{item}</strong>
+          ))}
         </div>
       </section>
 
@@ -148,7 +140,7 @@ export default function Home() {
       </section>
 
       <section className="statBand reveal" aria-label="Portfolio metrics">
-        {heroStats.map((stat) => (
+        {stats.map((stat) => (
           <div key={stat.label}>
             <strong>{stat.value}</strong>
             <span>{stat.label}</span>
@@ -256,6 +248,7 @@ export default function Home() {
             Preview CV
           </a>
         </div>
+        <ContactForm />
       </section>
 
       <footer className="footer">
@@ -264,9 +257,10 @@ export default function Home() {
           <a href="#top">Home</a>
           <a href="#projects">Projects</a>
           <a href="/cv">My CV</a>
+          <a href="/admin">Admin</a>
           <a href={`mailto:${profile.email}`}>Contact</a>
         </nav>
-        <p>(c) 2026 Ahmed Salman. Built for scalable backend work.</p>
+        <p>(c) 2026 {profile.name}. Built for scalable backend work.</p>
       </footer>
     </main>
   );
