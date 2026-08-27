@@ -8,8 +8,8 @@ test("portfolio source includes public, admin, CV, and links surfaces", async ()
     readFile(new URL("../app/admin/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/cv/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/links/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/robots.ts", import.meta.url), "utf8"),
-    readFile(new URL("../app/sitemap.ts", import.meta.url), "utf8"),
+    readFile(new URL("../public/robots.txt", import.meta.url), "utf8"),
+    readFile(new URL("../public/sitemap.xml", import.meta.url), "utf8"),
     readFile(new URL("../.github/workflows/ci.yml", import.meta.url), "utf8"),
   ]);
 
