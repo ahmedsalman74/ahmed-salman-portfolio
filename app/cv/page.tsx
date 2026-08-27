@@ -1,12 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getPortfolioContent } from "../lib/content-store";
+import { seoProfile } from "../seo";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Ahmed Salman CV | PDF Preview",
-  description: "PDF CV preview for Ahmed Salman.",
+  title: "Ahmed Salman CV | Senior Backend Developer",
+  description:
+    "PDF CV preview for Ahmed Salman, senior backend developer known as ahmedsalman74 and ahmedsalman72.",
+  keywords: seoProfile.keywords,
+  alternates: {
+    canonical: "/cv",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default async function CvPage() {

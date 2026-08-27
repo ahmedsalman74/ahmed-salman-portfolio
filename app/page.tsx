@@ -1,5 +1,6 @@
 import ContactForm from "./ContactForm";
 import { getPortfolioContent } from "./lib/content-store";
+import { absoluteUrl, seoProfile, SITE_URL } from "./seo";
 
 export const dynamic = "force-dynamic";
 
@@ -16,9 +17,43 @@ export default async function Home() {
     focusAreas,
     experience,
   } = content;
+  const homeJsonLd = jsonLd({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": absoluteUrl("/#website"),
+        url: SITE_URL,
+        name: "Ahmed Salman Portfolio",
+        description: seoProfile.description,
+        publisher: {
+          "@id": absoluteUrl("/#ahmed-salman"),
+        },
+      },
+      {
+        "@type": "Person",
+        "@id": absoluteUrl("/#ahmed-salman"),
+        name: profile.name,
+        alternateName: [
+          seoProfile.primaryHandle,
+          ...seoProfile.alternateHandles,
+        ],
+        jobTitle: seoProfile.role,
+        url: SITE_URL,
+        sameAs: [profile.github, profile.linkedin, absoluteUrl("/links")],
+        email: profile.email,
+        description: seoProfile.description,
+        knowsAbout: seoProfile.knowsAbout,
+      },
+    ],
+  });
 
   return (
     <main className="siteShell">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: homeJsonLd }}
+      />
       <section className="heroSurface" id="top" aria-labelledby="hero-title">
         <div className="ambient ambientOne" />
         <div className="ambient ambientTwo" />
@@ -262,4 +297,8 @@ export default async function Home() {
       </footer>
     </main>
   );
+}
+
+function jsonLd(value: unknown) {
+  return JSON.stringify(value).replace(/</g, "\\u003c");
 }

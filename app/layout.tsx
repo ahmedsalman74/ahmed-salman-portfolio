@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { absoluteUrl, seoProfile, SITE_URL } from "./seo";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,33 +14,60 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ahmed Salman | Mid-Senior Backend Software Engineer",
-  description:
-    "Portfolio for Ahmed Salman, a mid-senior backend software engineer specializing in Node.js, TypeScript, microservices, cloud platforms, distributed systems, and performance tuning.",
+  metadataBase: new URL(SITE_URL),
+  applicationName: "Ahmed Salman Portfolio",
+  authors: [{ name: seoProfile.name, url: SITE_URL }],
+  creator: seoProfile.name,
+  publisher: seoProfile.name,
+  title: {
+    default: seoProfile.title,
+    template: `%s | ${seoProfile.name}`,
+  },
+  description: seoProfile.description,
+  keywords: seoProfile.keywords,
+  alternates: {
+    canonical: "/",
+  },
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
-    title: "Ahmed Salman | Mid-Senior Backend Software Engineer",
-    description:
-      "Backend software engineer building scalable microservices, distributed systems, API platforms, and production cloud infrastructure.",
+    title: seoProfile.title,
+    description: seoProfile.description,
+    url: SITE_URL,
+    siteName: "Ahmed Salman Portfolio",
     type: "website",
     images: [
       {
         url: "/og.png",
         width: 1200,
         height: 630,
-        alt: "Ahmed Salman backend software engineer portfolio",
+        alt: "Ahmed Salman senior backend developer, gamer, and streamer",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ahmed Salman | Mid-Senior Backend Software Engineer",
-    description:
-      "Backend software engineer building scalable microservices, distributed systems, API platforms, and production cloud infrastructure.",
+    title: seoProfile.title,
+    description: seoProfile.description,
     images: ["/og.png"],
+  },
+  verification: {
+    other: {
+      profile: [absoluteUrl("/links")],
+    },
   },
 };
 

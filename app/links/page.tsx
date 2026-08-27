@@ -4,15 +4,54 @@ import { notFound } from "next/navigation";
 import PlatformIcon from "../PlatformIcon";
 import { getPortfolioContent } from "../lib/content-store";
 import { getPlatformColor, inferPlatformId } from "../link-platforms";
+import { absoluteUrl, seoProfile } from "../seo";
 import ShareButton from "./ShareButton";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { linkPage, profile } = await getPortfolioContent();
+  const { profile } = await getPortfolioContent();
+  const title = `${profile.name} | Senior Backend Developer, Gamer & Game Streamer`;
+
   return {
-    title: `${linkPage.headline || profile.name} | Links`,
-    description: linkPage.bio || profile.summary,
+    title,
+    description: seoProfile.description,
+    keywords: seoProfile.keywords,
+    alternates: {
+      canonical: "/links",
+    },
+    openGraph: {
+      title,
+      description: seoProfile.description,
+      url: absoluteUrl("/links"),
+      type: "profile",
+      siteName: "Ahmed Salman Portfolio",
+      images: [
+        {
+          url: "/og.png",
+          width: 1200,
+          height: 630,
+          alt: "Ahmed Salman senior backend developer, gamer, and streamer links profile",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: seoProfile.description,
+      images: ["/og.png"],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
+    },
   };
 }
 
@@ -26,6 +65,46 @@ export default async function LinksPage() {
   const regular = links.filter((item) => !item.featured);
   const theme = safeTheme(linkPage.theme);
   const layout = linkPage.layout === "cards" ? "cards" : "stack";
+  const sameAs = uniqueUrls([
+    profile.github,
+    profile.linkedin,
+    ...linkPage.socials.map((item) => item.url),
+    ...linkPage.links.map((item) => item.url),
+  ]);
+  const profileJsonLd = jsonLd({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "ProfilePage",
+        "@id": absoluteUrl("/links#profile-page"),
+        url: absoluteUrl("/links"),
+        name: `${profile.name} links profile`,
+        description: seoProfile.description,
+        mainEntity: {
+          "@id": absoluteUrl("/links#ahmed-salman"),
+        },
+      },
+      {
+        "@type": "Person",
+        "@id": absoluteUrl("/links#ahmed-salman"),
+        name: profile.name,
+        alternateName: [
+          seoProfile.primaryHandle,
+          ...seoProfile.alternateHandles,
+        ],
+        jobTitle: seoProfile.role,
+        url: absoluteUrl("/links"),
+        sameAs,
+        email: profile.email,
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: profile.location,
+        },
+        description: seoProfile.description,
+        knowsAbout: seoProfile.knowsAbout,
+      },
+    ],
+  });
 
   const style = {
     "--links-accent": safeColor(linkPage.accent, "#37e0ff"),
@@ -34,6 +113,10 @@ export default async function LinksPage() {
 
   return (
     <main className={`linksPage linksTheme-${theme}`} style={style}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: profileJsonLd }}
+      />
       <section className="linksCard" aria-label={`${linkPage.headline} links`}>
         <header className="linksHero">
           <div className="linksAvatar" aria-hidden="true">
@@ -51,6 +134,7 @@ export default async function LinksPage() {
               {linkPage.showVerifiedBadge ? <span aria-label="Verified">✓</span> : null}
             </h1>
             <p>{linkPage.bio || profile.summary}</p>
+            <p className="linksSeoLine">{seoProfile.shortDescription}</p>
           </div>
           {linkPage.showShareButton ? <ShareButton /> : null}
         </header>
@@ -163,4 +247,18 @@ function safeColor(value: string, fallback: string) {
 
 function platformStyle(platformId: string) {
   return { "--platform-color": getPlatformColor(platformId) } as CSSProperties;
+}
+
+function uniqueUrls(values: string[]) {
+  return Array.from(
+    new Set(
+      values
+        .map((value) => safeHref(value))
+        .filter((value) => value.startsWith("http://") || value.startsWith("https://")),
+    ),
+  );
+}
+
+function jsonLd(value: unknown) {
+  return JSON.stringify(value).replace(/</g, "\\u003c");
 }

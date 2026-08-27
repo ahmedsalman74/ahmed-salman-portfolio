@@ -308,7 +308,7 @@ export const defaultPortfolioContent: PortfolioContent = {
     handle: "ahmedsalman74",
     headline: "Ahmed Salman",
     bio:
-      "Backend software engineer building scalable APIs, microservices, and cloud systems.",
+      "Senior backend developer, passionate gamer, and game streamer exploring new games, developer tools, and emerging technologies.",
     avatarText: "AS",
     avatarImage: "",
     status: "Available for backend roles and consulting",

@@ -1112,6 +1112,12 @@ a {
   margin: 10px 0 0;
 }
 
+.linksSeoLine {
+  color: color-mix(in srgb, var(--links-accent) 74%, #ffffff) !important;
+  font-size: 0.92rem;
+  font-weight: 740;
+}
+
 .linksShare {
   min-height: 42px;
   border: 1px solid rgba(255, 255, 255, 0.14);
