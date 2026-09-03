@@ -1,6 +1,6 @@
 import ContactForm from "./ContactForm";
 import { getPortfolioContent } from "./lib/content-store";
-import { absoluteUrl, seoProfile, SITE_URL } from "./seo";
+import { absoluteUrl, allProfileAliases, seoProfile, SITE_URL } from "./seo";
 
 export const dynamic = "force-dynamic";
 
@@ -34,10 +34,7 @@ export default async function Home() {
         "@type": "Person",
         "@id": absoluteUrl("/#ahmed-salman"),
         name: profile.name,
-        alternateName: [
-          seoProfile.primaryHandle,
-          ...seoProfile.alternateHandles,
-        ],
+        alternateName: allProfileAliases,
         jobTitle: seoProfile.role,
         url: SITE_URL,
         sameAs: [profile.github, profile.linkedin, absoluteUrl("/links")],

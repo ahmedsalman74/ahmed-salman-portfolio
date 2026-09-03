@@ -49,6 +49,8 @@ export const metadata: Metadata = {
     url: SITE_URL,
     siteName: "Ahmed Salman Portfolio",
     type: "website",
+    locale: "en_US",
+    alternateLocale: ["ar_EG"],
     images: [
       {
         url: "/og.png",

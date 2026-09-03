@@ -6,9 +6,9 @@ import { seoProfile } from "../seo";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Ahmed Salman CV | Senior Backend Developer",
+  title: "Ahmed Salman CV | Senior Backend Software Engineer",
   description:
-    "PDF CV preview for Ahmed Salman, senior backend developer known as ahmedsalman74 and ahmedsalman72.",
+    "PDF CV preview for Ahmed Salman, أحمد سلمان, senior backend software engineer known as ahmedsalman74, ahmedsalman72, and Ahmed Salman 74.",
   keywords: seoProfile.keywords,
   alternates: {
     canonical: "/cv",

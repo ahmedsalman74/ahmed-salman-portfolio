@@ -3,11 +3,12 @@ import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
 test("portfolio source includes public, admin, CV, and links surfaces", async () => {
-  const [home, admin, cv, links, robots, sitemap, workflow] = await Promise.all([
+  const [home, admin, cv, links, seo, robots, sitemap, workflow] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/admin/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/cv/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/links/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/seo.ts", import.meta.url), "utf8"),
     readFile(new URL("../public/robots.txt", import.meta.url), "utf8"),
     readFile(new URL("../public/sitemap.xml", import.meta.url), "utf8"),
     readFile(new URL("../.github/workflows/ci.yml", import.meta.url), "utf8"),
@@ -19,10 +20,14 @@ test("portfolio source includes public, admin, CV, and links surfaces", async ()
   assert.match(cv, /\/api\/cv\/file/);
   assert.match(links, /linkPage/);
   assert.match(links, /application\/ld\+json/);
-  assert.match(links, /Senior Backend Developer, Gamer & Game Streamer/);
+  assert.match(links, /Senior backend software engineer/);
+  assert.match(links, /Search Identity/);
+  assert.match(seo, /Salman Twitch/);
+  assert.match(seo, /احمد سالمان/);
   assert.match(robots, /\/sitemap\.xml/);
   assert.match(robots, /\/admin/);
   assert.match(sitemap, /\/links/);
+  assert.match(sitemap, /2026-09-03/);
   assert.match(workflow, /npm run build/);
 });
 

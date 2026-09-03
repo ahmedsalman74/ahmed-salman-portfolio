@@ -3,29 +3,30 @@ import type { CSSProperties } from "react";
 import { notFound } from "next/navigation";
 import PlatformIcon from "../PlatformIcon";
 import { getPortfolioContent } from "../lib/content-store";
-import { getPlatformColor, inferPlatformId } from "../link-platforms";
-import { absoluteUrl, seoProfile } from "../seo";
+import { getLinkPlatform, getPlatformColor, inferPlatformId } from "../link-platforms";
+import { absoluteUrl, allProfileAliases, seoProfile } from "../seo";
 import ShareButton from "./ShareButton";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { profile } = await getPortfolioContent();
-  const title = `${profile.name} | Senior Backend Developer, Gamer & Game Streamer`;
+  const title = seoProfile.linksTitle;
 
   return {
     title,
-    description: seoProfile.description,
+    description: seoProfile.linksDescription,
     keywords: seoProfile.keywords,
     alternates: {
       canonical: "/links",
     },
     openGraph: {
       title,
-      description: seoProfile.description,
+      description: seoProfile.linksDescription,
       url: absoluteUrl("/links"),
       type: "profile",
       siteName: "Ahmed Salman Portfolio",
+      locale: "en_US",
+      alternateLocale: ["ar_EG"],
       images: [
         {
           url: "/og.png",
@@ -38,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: "summary_large_image",
       title,
-      description: seoProfile.description,
+      description: seoProfile.linksDescription,
       images: ["/og.png"],
     },
     robots: {
@@ -65,6 +66,10 @@ export default async function LinksPage() {
   const regular = links.filter((item) => !item.featured);
   const theme = safeTheme(linkPage.theme);
   const layout = linkPage.layout === "cards" ? "cards" : "stack";
+  const visibleLinkItems = [...socials, ...links];
+  const platformNames = uniqueText(
+    visibleLinkItems.map((item) => displayPlatformName(inferPlatformId(item))),
+  );
   const sameAs = uniqueUrls([
     profile.github,
     profile.linkedin,
@@ -79,19 +84,25 @@ export default async function LinksPage() {
         "@id": absoluteUrl("/links#profile-page"),
         url: absoluteUrl("/links"),
         name: `${profile.name} links profile`,
-        description: seoProfile.description,
+        description: seoProfile.linksDescription,
         mainEntity: {
           "@id": absoluteUrl("/links#ahmed-salman"),
         },
+        about: seoProfile.searchAliases,
+        hasPart: links
+          .filter((item) => safeHref(item.url))
+          .map((item) => ({
+            "@type": "WebPage",
+            name: `${profile.name} on ${displayPlatformName(inferPlatformId(item))}: ${item.title}`,
+            url: safeHref(item.url),
+            description: item.description || seoProfile.shortDescription,
+          })),
       },
       {
         "@type": "Person",
         "@id": absoluteUrl("/links#ahmed-salman"),
         name: profile.name,
-        alternateName: [
-          seoProfile.primaryHandle,
-          ...seoProfile.alternateHandles,
-        ],
+        alternateName: allProfileAliases,
         jobTitle: seoProfile.role,
         url: absoluteUrl("/links"),
         sameAs,
@@ -100,8 +111,12 @@ export default async function LinksPage() {
           "@type": "PostalAddress",
           addressLocality: profile.location,
         },
-        description: seoProfile.description,
+        description: seoProfile.linksDescription,
         knowsAbout: seoProfile.knowsAbout,
+        subjectOf: sameAs.map((url) => ({
+          "@type": "WebPage",
+          url,
+        })),
       },
     ],
   });
@@ -138,6 +153,32 @@ export default async function LinksPage() {
           </div>
           {linkPage.showShareButton ? <ShareButton /> : null}
         </header>
+
+        <section className="linksSearchPanel" aria-label="Ahmed Salman search identity">
+          <div>
+            <p className="linksSearchKicker">Search Identity</p>
+            <h2>Ahmed Salman / أحمد سلمان</h2>
+            <p>
+              Official link hub for Ahmed Salman, also written as احمد سلمان or احمد سالمان,
+              known online as ahmedsalman74 and ahmedsalman72.
+            </p>
+          </div>
+          <div className="linksSearchGrid">
+            <div>
+              <strong>Software</strong>
+              <span>Senior backend software engineer focused on Node.js, TypeScript, Nest.js, microservices, cloud systems, and APIs.</span>
+            </div>
+            <div>
+              <strong>Gaming</strong>
+              <span>Passionate gamer and game streamer across {platformNames.length ? platformNames.join(", ") : "Twitch, Kick, TikTok, X/Twitter, YouTube, Instagram, Discord, and Spotify"}.</span>
+            </div>
+          </div>
+          <div className="linksAliasChips" aria-label="Profile search aliases">
+            {seoProfile.searchAliases.map((alias) => (
+              <span key={alias}>{alias}</span>
+            ))}
+          </div>
+        </section>
 
         <div className="linksMeta" aria-label="Profile details">
           {linkPage.status ? <span>{linkPage.status}</span> : null}
@@ -247,6 +288,15 @@ function safeColor(value: string, fallback: string) {
 
 function platformStyle(platformId: string) {
   return { "--platform-color": getPlatformColor(platformId) } as CSSProperties;
+}
+
+function displayPlatformName(platformId: string) {
+  const platform = getLinkPlatform(platformId);
+  return platform.id === "x" ? "X/Twitter" : platform.name;
+}
+
+function uniqueText(values: string[]) {
+  return Array.from(new Set(values.filter(Boolean)));
 }
 
 function uniqueUrls(values: string[]) {

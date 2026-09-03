@@ -1118,6 +1118,74 @@ a {
   font-weight: 740;
 }
 
+.linksSearchPanel {
+  display: grid;
+  gap: 16px;
+  border: 1px solid color-mix(in srgb, var(--links-accent) 26%, rgba(255, 255, 255, 0.12));
+  border-radius: 20px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--links-accent) 12%, transparent), rgba(255, 255, 255, 0.05)),
+    rgba(255, 255, 255, 0.05);
+  padding: 18px;
+}
+
+.linksSearchKicker {
+  margin: 0 0 8px;
+  color: color-mix(in srgb, var(--links-accent) 82%, #ffffff);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.72rem;
+  font-weight: 820;
+  text-transform: uppercase;
+}
+
+.linksSearchPanel h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(1.3rem, 3vw, 1.8rem);
+  line-height: 1.1;
+}
+
+.linksSearchPanel p,
+.linksSearchGrid span {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.linksSearchGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.linksSearchGrid div {
+  min-height: 112px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  background: rgba(3, 8, 14, 0.28);
+  padding: 14px;
+}
+
+.linksSearchGrid strong {
+  display: block;
+  color: #ffffff;
+}
+
+.linksAliasChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.linksAliasChips span {
+  border: 1px solid color-mix(in srgb, var(--links-accent) 28%, rgba(255, 255, 255, 0.14));
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #dfeeff;
+  font-size: 0.78rem;
+  padding: 7px 10px;
+}
+
 .linksShare {
   min-height: 42px;
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -1671,7 +1739,8 @@ a {
   .cvCards,
   .cvSkillGrid,
   .adminGrid,
-  .linksLayout-cards {
+  .linksLayout-cards,
+  .linksSearchGrid {
     grid-template-columns: 1fr;
   }
 
