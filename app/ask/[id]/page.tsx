@@ -1,5 +1,5 @@
+/* eslint-disable @next/next/no-html-link-for-pages -- Vinext link prefetch fails on Cloudflare Pages. */
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import AskShareActions from "../AskShareActions";
 import { getPublicAskQuestion } from "@/app/lib/content-store";
@@ -72,9 +72,9 @@ export default async function AskAnswerPage({ params }: AskAnswerPageProps) {
     <main className="askPage">
       <section className="askShell askDetailShell">
         <header className="askHero">
-          <Link className="backLink" href="/ask">
+          <a className="backLink" href="/ask">
             All questions
-          </Link>
+          </a>
           <p className="kicker">Shared Answer</p>
           <h1>Ahmed Salman answered this.</h1>
         </header>

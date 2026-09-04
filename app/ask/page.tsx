@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import AskForm from "./AskForm";
 import AskShareActions from "./AskShareActions";
 import { getPortfolioContent, listPublicAskQuestions } from "../lib/content-store";
@@ -86,9 +85,9 @@ export default async function AskPage() {
       />
       <section className="askShell">
         <header className="askHero">
-          <Link className="backLink" href="/links">
+          <a className="backLink" href="/links">
             Back to links
-          </Link>
+          </a>
           <p className="kicker">Anonymous Q&A</p>
           <h1>Ask Ahmed anything.</h1>
           <p>

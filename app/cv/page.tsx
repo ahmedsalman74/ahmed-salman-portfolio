@@ -1,5 +1,5 @@
+/* eslint-disable @next/next/no-html-link-for-pages -- Vinext link prefetch fails on Cloudflare Pages. */
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getPortfolioContent } from "../lib/content-store";
 import { seoProfile } from "../seo";
 
@@ -25,17 +25,17 @@ export default async function CvPage() {
   return (
     <main className="cvPdfPage">
       <header className="cvPdfHeader">
-        <Link className="backLink" href="/">
+        <a className="backLink" href="/">
           Back to portfolio
-        </Link>
+        </a>
         <div>
           <p className="kicker">PDF CV</p>
           <h1>{profile.name}</h1>
           <p>{profile.role}</p>
         </div>
-        <Link className="buttonSecondary" href="/">
+        <a className="buttonSecondary" href="/">
           Portfolio
-        </Link>
+        </a>
       </header>
       <section className="pdfFrame" aria-label="Ahmed Salman CV PDF">
         <iframe title="Ahmed Salman CV PDF" src="/api/cv/file" />

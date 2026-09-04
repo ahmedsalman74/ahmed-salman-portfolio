@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+/* eslint-disable @next/next/no-html-link-for-pages -- Vinext link prefetch fails on Cloudflare Pages. */
 import { FormEvent, useState } from "react";
 
 export default function AdminLogin() {
@@ -30,9 +30,9 @@ export default function AdminLogin() {
 
   return (
     <section className="adminLogin">
-      <Link className="backLink" href="/">
+      <a className="backLink" href="/">
         Back to portfolio
-      </Link>
+      </a>
       <form onSubmit={handleSubmit}>
         <p className="kicker">SaaS Admin</p>
         <h1>Portfolio Control Room</h1>
