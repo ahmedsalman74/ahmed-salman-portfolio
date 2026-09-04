@@ -10,7 +10,7 @@
     "build": "vinext build && node scripts/prepare-cloudflare-pages.mjs",
     "start": "vinext start",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .wrangler",
     "db:generate": "drizzle-kit generate",
     "deploy:cloudflare": "wrangler pages deploy dist/client --project-name=ahmedsalman --branch=main --commit-dirty=true",
     "deploy:cloudflare:dry-run": "wrangler deploy --config dist/server/wrangler.json --dry-run"

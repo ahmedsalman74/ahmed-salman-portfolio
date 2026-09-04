@@ -6,9 +6,14 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const clientDir = path.join(root, "dist", "client");
 const serverDir = path.join(root, "dist", "server");
+const workerConfigPath = path.join(serverDir, "wrangler.json");
 
 await mkdir(clientDir, { recursive: true });
 await rm(path.join(clientDir, "_worker-runtime"), { recursive: true, force: true });
+
+const workerConfig = JSON.parse(await readFile(workerConfigPath, "utf8"));
+delete workerConfig.legacy_env;
+await writeFile(workerConfigPath, `${JSON.stringify(workerConfig)}\n`);
 
 await build({
   entryPoints: [path.join(serverDir, "index.js")],

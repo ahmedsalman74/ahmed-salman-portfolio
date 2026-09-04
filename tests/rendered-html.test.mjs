@@ -74,6 +74,7 @@ test("build prepares a Cloudflare Pages advanced-mode worker", async () => {
   assert.match(packageJson, /wrangler pages deploy dist\/client --project-name=ahmedsalman/);
   assert.match(prepareScript, /from "esbuild"/);
   assert.match(prepareScript, /bundle: true/);
+  assert.match(prepareScript, /delete workerConfig\.legacy_env/);
   assert.match(prepareScript, /_worker\.js/);
 });
 
