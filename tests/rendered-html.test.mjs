@@ -64,6 +64,19 @@ test("portfolio source includes public, admin, CV, links, and ask surfaces", asy
   assert.match(workflow, /npm run deploy:cloudflare/);
 });
 
+test("build prepares a Cloudflare Pages advanced-mode worker", async () => {
+  const [packageJson, prepareScript] = await Promise.all([
+    readFile(new URL("../package.json", import.meta.url), "utf8"),
+    readFile(new URL("../scripts/prepare-cloudflare-pages.mjs", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(packageJson, /prepare-cloudflare-pages\.mjs/);
+  assert.match(packageJson, /wrangler pages deploy dist\/client --project-name=ahmedsalman/);
+  assert.match(prepareScript, /from "esbuild"/);
+  assert.match(prepareScript, /bundle: true/);
+  assert.match(prepareScript, /_worker\.js/);
+});
+
 test("default CV PDF is bundled for first deploy fallback", async () => {
   await access(new URL("../public/cv.pdf", import.meta.url));
 });

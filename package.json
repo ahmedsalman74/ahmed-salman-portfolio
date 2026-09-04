@@ -7,12 +7,12 @@
   },
   "scripts": {
     "dev": "vinext dev",
-    "build": "vinext build",
+    "build": "vinext build && node scripts/prepare-cloudflare-pages.mjs",
     "start": "vinext start",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
-    "deploy:cloudflare": "wrangler deploy --config dist/server/wrangler.json --keep-vars",
+    "deploy:cloudflare": "wrangler pages deploy dist/client --project-name=ahmedsalman --branch=main --commit-dirty=true",
     "deploy:cloudflare:dry-run": "wrangler deploy --config dist/server/wrangler.json --dry-run"
   },
   "dependencies": {
@@ -33,6 +33,7 @@
     "@vitejs/plugin-react": "6.0.2",
     "@vitejs/plugin-rsc": "0.5.26",
     "drizzle-kit": "0.31.10",
+    "esbuild": "^0.28.0",
     "eslint": "9.39.4",
     "eslint-plugin-jsx-a11y": "6.10.2",
     "eslint-plugin-react": "7.37.5",
@@ -44,7 +45,7 @@
     "typescript-eslint": "8.59.3",
     "vinext": "1.0.0-beta.2",
     "vite": "8.0.13",
-    "wrangler": "4.92.0"
+    "wrangler": "^4.129.0"
   },
   "type": "module"
 }
