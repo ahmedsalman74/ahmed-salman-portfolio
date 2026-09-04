@@ -73,6 +73,19 @@ test("portfolio source includes public, admin, CV, links, and ask surfaces", asy
   assert.match(adminCvApi, /store\.put/);
 });
 
+test("Cloudflare Pages worker serves generated assets before dynamic routes", async () => {
+  const prepareScript = await readFile(
+    new URL("../scripts/prepare-cloudflare-pages.mjs", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(prepareScript, /env\.ASSETS\.fetch\(request\)/);
+  assert.match(prepareScript, /assetResponse\.status !== 404/);
+  assert.match(prepareScript, /app\.fetch\(request, env, context\)/);
+  assert.match(prepareScript, /CF_PAGES_COMMIT_SHA/);
+  assert.match(prepareScript, /_deployments/);
+});
+
 test("build prepares a Cloudflare Pages advanced-mode worker", async () => {
   const [packageJson, prepareScript] = await Promise.all([
     readFile(new URL("../package.json", import.meta.url), "utf8"),

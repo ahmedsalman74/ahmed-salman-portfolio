@@ -58,13 +58,32 @@ jobs:
           if [ -n "${CLOUDFLARE_DEPLOY_HOOK:-}" ]; then
             curl --fail --silent --show-error --request POST "${CLOUDFLARE_DEPLOY_HOOK}"
             echo "Triggered Cloudflare Pages deployment for https://ahmedsalman.pages.dev." >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-
-          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
+          elif [ -z "${CLOUDFLARE_API_TOKEN:-}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
             echo "::error::Add CLOUDFLARE_DEPLOY_HOOK, or add both CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID, to this repository's GitHub Actions secrets."
             exit 1
+          else
+            npm run deploy:cloudflare
+            echo "Deployed Cloudflare Worker runtime for https://ahmedsalman.pages.dev." >> "$GITHUB_STEP_SUMMARY"
           fi
 
-          npm run deploy:cloudflare
-          echo "Deployed Cloudflare Worker runtime for https://ahmedsalman.pages.dev." >> "$GITHUB_STEP_SUMMARY"
+          marker_url="https://ahmedsalman.pages.dev/_deployments/${GITHUB_SHA}.txt"
+          for attempt in $(seq 1 48); do
+            marker=$(curl --fail --silent --show-error "${marker_url}?attempt=${attempt}" || true)
+            if [ "${marker}" = "${GITHUB_SHA}" ]; then
+              break
+            fi
+            if [ "${attempt}" -eq 48 ]; then
+              echo "::error::Cloudflare did not publish commit ${GITHUB_SHA} within 12 minutes."
+              exit 1
+            fi
+            sleep 15
+          done
+
+          css_file=$(find dist/client/_next/static/css -maxdepth 1 -type f -name '*.css' -printf '%f\n' | head -n 1)
+          curl --fail --silent --show-error --output /dev/null "https://ahmedsalman.pages.dev/_next/static/css/${css_file}"
+
+          for route in / /links /ask /admin /cv /api/ask; do
+            curl --fail --silent --show-error --output /dev/null "https://ahmedsalman.pages.dev${route}"
+          done
+
+          echo "Verified the deployed UI assets and application routes for ${GITHUB_SHA}." >> "$GITHUB_STEP_SUMMARY"

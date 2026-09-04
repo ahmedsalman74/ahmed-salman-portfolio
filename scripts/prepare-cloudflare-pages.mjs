@@ -16,7 +16,26 @@ delete workerConfig.legacy_env;
 await writeFile(workerConfigPath, `${JSON.stringify(workerConfig)}\n`);
 
 await build({
-  entryPoints: [path.join(serverDir, "index.js")],
+  stdin: {
+    contents: `
+      import app from "./dist/server/index.js";
+
+      export default {
+        async fetch(request, env, context) {
+          if ((request.method === "GET" || request.method === "HEAD") && env.ASSETS) {
+            const assetResponse = await env.ASSETS.fetch(request);
+            if (assetResponse.status !== 404) {
+              return assetResponse;
+            }
+          }
+
+          return app.fetch(request, env, context);
+        },
+      };
+    `,
+    resolveDir: root,
+    sourcefile: "cloudflare-pages-worker-entry.js",
+  },
   outfile: path.join(clientDir, "_worker.js"),
   bundle: true,
   format: "esm",
@@ -26,6 +45,13 @@ await build({
   legalComments: "none",
   logLevel: "silent",
 });
+
+const deploymentId = process.env.CF_PAGES_COMMIT_SHA ?? process.env.GITHUB_SHA;
+if (deploymentId && /^[0-9a-f]{7,40}$/i.test(deploymentId)) {
+  const deploymentDir = path.join(clientDir, "_deployments");
+  await mkdir(deploymentDir, { recursive: true });
+  await writeFile(path.join(deploymentDir, `${deploymentId}.txt`), deploymentId);
+}
 
 const assetsIgnorePath = path.join(clientDir, ".assetsignore");
 let assetsIgnore = "";
