@@ -3,6 +3,17 @@ import { env } from "cloudflare:workers";
 export type RuntimeEnv = {
   DB?: D1Database;
   CV_BUCKET?: R2Bucket;
+  CV_STORE?: {
+    getWithMetadata<Metadata>(
+      key: string,
+      type: "arrayBuffer",
+    ): Promise<{ value: ArrayBuffer | null; metadata: Metadata | null }>;
+    put(
+      key: string,
+      value: ArrayBuffer,
+      options?: { metadata?: Record<string, string> },
+    ): Promise<void>;
+  };
   ADMIN_USERNAME?: string;
   ADMIN_PASSWORD_HASH?: string;
   ADMIN_PASSWORD_SALT?: string;

@@ -17,6 +17,9 @@ test("portfolio source includes public, admin, CV, links, and ask surfaces", asy
     sitemap,
     textSitemap,
     workflow,
+    runtime,
+    cvFileApi,
+    adminCvApi,
   ] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/admin/page.tsx", import.meta.url), "utf8"),
@@ -31,6 +34,9 @@ test("portfolio source includes public, admin, CV, links, and ask surfaces", asy
     readFile(new URL("../public/sitemap.xml", import.meta.url), "utf8"),
     readFile(new URL("../public/sitemap.txt", import.meta.url), "utf8"),
     readFile(new URL("../.github/workflows/ci.yml", import.meta.url), "utf8"),
+    readFile(new URL("../app/lib/runtime.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/cv/file/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/admin/cv/route.ts", import.meta.url), "utf8"),
   ]);
 
   assert.match(home, /ContactForm/);
@@ -62,6 +68,9 @@ test("portfolio source includes public, admin, CV, links, and ask surfaces", asy
   assert.match(workflow, /deploy:cloudflare:dry-run/);
   assert.match(workflow, /CLOUDFLARE_DEPLOY_HOOK/);
   assert.match(workflow, /npm run deploy:cloudflare/);
+  assert.match(runtime, /CV_STORE/);
+  assert.match(cvFileApi, /getWithMetadata/);
+  assert.match(adminCvApi, /store\.put/);
 });
 
 test("build prepares a Cloudflare Pages advanced-mode worker", async () => {

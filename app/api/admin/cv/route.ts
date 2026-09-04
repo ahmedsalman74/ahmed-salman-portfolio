@@ -12,8 +12,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
 
-  const bucket = getRuntimeEnv().CV_BUCKET;
-  if (!bucket) {
+  const { CV_STORE: store, CV_BUCKET: bucket } = getRuntimeEnv();
+  if (!store && !bucket) {
     return NextResponse.json(
       { error: "CV storage is not configured." },
       { status: 500 },
@@ -35,16 +35,27 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Only PDF files are accepted." }, { status: 400 });
   }
 
-  await bucket.put(CURRENT_CV_KEY, await file.arrayBuffer(), {
-    httpMetadata: {
-      contentType: "application/pdf",
-      contentDisposition: "inline",
-    },
-    customMetadata: {
-      filename: file.name,
-      uploadedAt: new Date().toISOString(),
-    },
-  });
+  const data = await file.arrayBuffer();
+  if (store) {
+    await store.put(CURRENT_CV_KEY, data, {
+      metadata: {
+        contentType: "application/pdf",
+        filename: file.name,
+        uploadedAt: new Date().toISOString(),
+      },
+    });
+  } else if (bucket) {
+    await bucket.put(CURRENT_CV_KEY, data, {
+      httpMetadata: {
+        contentType: "application/pdf",
+        contentDisposition: "inline",
+      },
+      customMetadata: {
+        filename: file.name,
+        uploadedAt: new Date().toISOString(),
+      },
+    });
+  }
   await saveCvMetadata({
     filename: file.name,
     contentType: "application/pdf",

@@ -55,4 +55,4 @@ Admin credentials are provided through deployment environment variables and must
 - `ADMIN_PASSWORD_HASH`
 - `ADMIN_SESSION_SECRET`
 
-The editable content and tickets use D1. The replacement CV PDF uses R2. The bundled `public/cv.pdf` is the fallback shown before a custom PDF is uploaded.
+The editable content and tickets use D1. Cloudflare Pages stores replacement CV PDFs in KV through the `CV_STORE` binding; the Sites deployment can continue using R2 through `CV_BUCKET`. The bundled `public/cv.pdf` is the fallback shown before a custom PDF is uploaded.
