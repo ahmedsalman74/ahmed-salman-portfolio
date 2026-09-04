@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import { notFound } from "next/navigation";
+import AskShareActions from "../ask/AskShareActions";
 import PlatformIcon from "../PlatformIcon";
-import { getPortfolioContent } from "../lib/content-store";
+import { getPortfolioContent, listPublicAskQuestions } from "../lib/content-store";
 import { getLinkPlatform, getPlatformColor, inferPlatformId } from "../link-platforms";
 import { absoluteUrl, allProfileAliases, seoProfile } from "../seo";
 import ShareButton from "./ShareButton";
@@ -57,7 +58,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function LinksPage() {
-  const { linkPage, profile } = await getPortfolioContent();
+  const [{ linkPage, profile }, profileAnswers] = await Promise.all([
+    getPortfolioContent(),
+    listPublicAskQuestions({ profileOnly: true }),
+  ]);
   if (!linkPage.enabled) notFound();
 
   const socials = linkPage.socials.filter((item) => item.enabled && safeHref(item.url));
@@ -66,10 +70,6 @@ export default async function LinksPage() {
   const regular = links.filter((item) => !item.featured);
   const theme = safeTheme(linkPage.theme);
   const layout = linkPage.layout === "cards" ? "cards" : "stack";
-  const visibleLinkItems = [...socials, ...links];
-  const platformNames = uniqueText(
-    visibleLinkItems.map((item) => displayPlatformName(inferPlatformId(item))),
-  );
   const sameAs = uniqueUrls([
     profile.github,
     profile.linkedin,
@@ -154,32 +154,6 @@ export default async function LinksPage() {
           {linkPage.showShareButton ? <ShareButton /> : null}
         </header>
 
-        <section className="linksSearchPanel" aria-label="Ahmed Salman search identity">
-          <div>
-            <p className="linksSearchKicker">Search Identity</p>
-            <h2>Ahmed Salman / أحمد سلمان</h2>
-            <p>
-              Official link hub for Ahmed Salman, also written as احمد سلمان or احمد سالمان,
-              known online as ahmedsalman74 and ahmedsalman72.
-            </p>
-          </div>
-          <div className="linksSearchGrid">
-            <div>
-              <strong>Software</strong>
-              <span>Senior backend software engineer focused on Node.js, TypeScript, Nest.js, microservices, cloud systems, and APIs.</span>
-            </div>
-            <div>
-              <strong>Gaming</strong>
-              <span>Passionate gamer and game streamer across {platformNames.length ? platformNames.join(", ") : "Twitch, Kick, TikTok, X/Twitter, YouTube, Instagram, Discord, and Spotify"}.</span>
-            </div>
-          </div>
-          <div className="linksAliasChips" aria-label="Profile search aliases">
-            {seoProfile.searchAliases.map((alias) => (
-              <span key={alias}>{alias}</span>
-            ))}
-          </div>
-        </section>
-
         <div className="linksMeta" aria-label="Profile details">
           {linkPage.status ? <span>{linkPage.status}</span> : null}
           {linkPage.location ? <span>{linkPage.location}</span> : null}
@@ -215,6 +189,23 @@ export default async function LinksPage() {
             <LinkTile item={item} key={`${item.title}-${item.url}`} />
           ))}
         </section>
+
+        {profileAnswers.length ? (
+          <section className="linksAskAnswers" aria-label="Featured answered questions">
+            <p className="linksSectionLabel">Answered on ask</p>
+            {profileAnswers.map((item) => (
+              <article className="linksAskCard" key={item.id}>
+                <p>{item.question}</p>
+                <strong>{item.answer}</strong>
+                <AskShareActions
+                  answer={item.answer}
+                  question={item.question}
+                  url={absoluteUrl(`/ask/${item.id}`)}
+                />
+              </article>
+            ))}
+          </section>
+        ) : null}
       </section>
     </main>
   );
@@ -293,10 +284,6 @@ function platformStyle(platformId: string) {
 function displayPlatformName(platformId: string) {
   const platform = getLinkPlatform(platformId);
   return platform.id === "x" ? "X/Twitter" : platform.name;
-}
-
-function uniqueText(values: string[]) {
-  return Array.from(new Set(values.filter(Boolean)));
 }
 
 function uniqueUrls(values: string[]) {

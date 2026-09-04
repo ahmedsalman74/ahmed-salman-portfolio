@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Allow: /links
+Allow: /ask
 Allow: /cv
 Disallow: /admin
 Disallow: /api/admin

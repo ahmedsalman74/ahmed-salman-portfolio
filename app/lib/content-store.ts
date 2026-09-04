@@ -18,6 +18,18 @@ export type Ticket = {
   updatedAt: number;
 };
 
+export type AskQuestion = {
+  id: string;
+  question: string;
+  answer: string;
+  status: string;
+  showOnAsk: boolean;
+  showOnProfile: boolean;
+  createdAt: number;
+  updatedAt: number;
+  answeredAt: number | null;
+};
+
 const CONTENT_ID = "main";
 const CV_ID = "current";
 export const CURRENT_CV_KEY = "cv/current.pdf";
@@ -112,6 +124,100 @@ export async function deleteTicket(id: string) {
   await db.prepare("DELETE FROM tickets WHERE id = ?").bind(id).run();
 }
 
+export async function createAskQuestion(input: { question: string }) {
+  const db = getDb();
+  await ensureDatabase();
+  const now = Date.now();
+  const id = crypto.randomUUID();
+  await db
+    .prepare(
+      "INSERT INTO ask_questions (id, question, answer, status, show_on_ask, show_on_profile, created_at, updated_at, answered_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    )
+    .bind(id, cleanText(input.question, 1200), "", "new", 0, 0, now, now, null)
+    .run();
+  return id;
+}
+
+export async function listAskQuestions(): Promise<AskQuestion[]> {
+  const db = getDb();
+  await ensureDatabase();
+  const result = await db
+    .prepare(
+      "SELECT id, question, answer, status, show_on_ask AS showOnAsk, show_on_profile AS showOnProfile, created_at AS createdAt, updated_at AS updatedAt, answered_at AS answeredAt FROM ask_questions ORDER BY created_at DESC",
+    )
+    .all<AskQuestionRow>();
+  return (result.results ?? []).map(normalizeAskQuestion);
+}
+
+export async function listPublicAskQuestions(options?: {
+  profileOnly?: boolean;
+}): Promise<AskQuestion[]> {
+  const db = getDb();
+  await ensureDatabase();
+  const visibleColumn = options?.profileOnly ? "show_on_profile" : "show_on_ask";
+  const result = await db
+    .prepare(
+      `SELECT id, question, answer, status, show_on_ask AS showOnAsk, show_on_profile AS showOnProfile, created_at AS createdAt, updated_at AS updatedAt, answered_at AS answeredAt FROM ask_questions WHERE status = 'answered' AND answer != '' AND ${visibleColumn} = 1 ORDER BY answered_at DESC, updated_at DESC`,
+    )
+    .all<AskQuestionRow>();
+  return (result.results ?? []).map(normalizeAskQuestion);
+}
+
+export async function getPublicAskQuestion(id: string): Promise<AskQuestion | null> {
+  const db = getDb();
+  await ensureDatabase();
+  const row = await db
+    .prepare(
+      "SELECT id, question, answer, status, show_on_ask AS showOnAsk, show_on_profile AS showOnProfile, created_at AS createdAt, updated_at AS updatedAt, answered_at AS answeredAt FROM ask_questions WHERE id = ? AND status = 'answered' AND answer != '' AND (show_on_ask = 1 OR show_on_profile = 1)",
+    )
+    .bind(id)
+    .first<AskQuestionRow>();
+  return row ? normalizeAskQuestion(row) : null;
+}
+
+export async function updateAskQuestion(input: {
+  id: string;
+  answer: string;
+  status: string;
+  showOnAsk: boolean;
+  showOnProfile: boolean;
+}) {
+  const db = getDb();
+  await ensureDatabase();
+  const answer = cleanText(input.answer, 5000);
+  const requestedStatus = ["new", "answered", "archived"].includes(input.status)
+    ? input.status
+    : "new";
+  const status = answer && requestedStatus !== "new" ? requestedStatus : answer ? "answered" : "new";
+  const existing = await db
+    .prepare("SELECT answered_at AS answeredAt FROM ask_questions WHERE id = ?")
+    .bind(input.id)
+    .first<{ answeredAt: number | null }>();
+  const answeredAt = status === "answered" ? existing?.answeredAt ?? Date.now() : null;
+  const canPublish = status === "answered" && Boolean(answer);
+
+  await db
+    .prepare(
+      "UPDATE ask_questions SET answer = ?, status = ?, show_on_ask = ?, show_on_profile = ?, updated_at = ?, answered_at = ? WHERE id = ?",
+    )
+    .bind(
+      answer,
+      status,
+      canPublish && input.showOnAsk ? 1 : 0,
+      canPublish && input.showOnProfile ? 1 : 0,
+      Date.now(),
+      answeredAt,
+      input.id,
+    )
+    .run();
+}
+
+export async function deleteAskQuestion(id: string) {
+  const db = getDb();
+  await ensureDatabase();
+  await db.prepare("DELETE FROM ask_questions WHERE id = ?").bind(id).run();
+}
+
 export async function saveCvMetadata(input: {
   filename: string;
   contentType: string;
@@ -148,7 +254,19 @@ async function ensureDatabase() {
       "CREATE TABLE IF NOT EXISTS cv_files (id TEXT PRIMARY KEY NOT NULL, filename TEXT NOT NULL, content_type TEXT NOT NULL, size INTEGER NOT NULL, object_key TEXT NOT NULL, uploaded_at INTEGER NOT NULL)",
     ),
     db.prepare(
+      "CREATE TABLE IF NOT EXISTS ask_questions (id TEXT PRIMARY KEY NOT NULL, question TEXT NOT NULL, answer TEXT DEFAULT '' NOT NULL, status TEXT DEFAULT 'new' NOT NULL, show_on_ask INTEGER DEFAULT 0 NOT NULL, show_on_profile INTEGER DEFAULT 0 NOT NULL, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, answered_at INTEGER)",
+    ),
+    db.prepare(
       "CREATE INDEX IF NOT EXISTS idx_tickets_created_at ON tickets(created_at)",
+    ),
+    db.prepare(
+      "CREATE INDEX IF NOT EXISTS idx_ask_questions_created_at ON ask_questions(created_at)",
+    ),
+    db.prepare(
+      "CREATE INDEX IF NOT EXISTS idx_ask_questions_show_on_ask ON ask_questions(show_on_ask)",
+    ),
+    db.prepare(
+      "CREATE INDEX IF NOT EXISTS idx_ask_questions_show_on_profile ON ask_questions(show_on_profile)",
     ),
     db.prepare("PRAGMA optimize"),
   ]);
@@ -314,4 +432,18 @@ function readBoolean(value: unknown, fallback: boolean) {
 
 function cleanText(value: string, maxLength: number) {
   return value.trim().slice(0, maxLength);
+}
+
+type AskQuestionRow = Omit<AskQuestion, "showOnAsk" | "showOnProfile"> & {
+  showOnAsk: boolean | number;
+  showOnProfile: boolean | number;
+};
+
+function normalizeAskQuestion(row: AskQuestionRow): AskQuestion {
+  return {
+    ...row,
+    showOnAsk: Boolean(row.showOnAsk),
+    showOnProfile: Boolean(row.showOnProfile),
+    answeredAt: row.answeredAt ?? null,
+  };
 }

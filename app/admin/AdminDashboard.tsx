@@ -10,6 +10,7 @@ import {
   LINK_PLATFORMS,
 } from "@/app/link-platforms";
 import type { PortfolioContent } from "@/app/profile-data";
+import { absoluteUrl } from "@/app/seo";
 
 type Ticket = {
   id: string;
@@ -21,18 +22,32 @@ type Ticket = {
   createdAt: number;
 };
 
+type AskQuestion = {
+  id: string;
+  question: string;
+  answer: string;
+  status: string;
+  showOnAsk: boolean;
+  showOnProfile: boolean;
+  createdAt: number;
+  updatedAt: number;
+  answeredAt: number | null;
+};
+
 type Tab =
   | "content"
   | "projects"
   | "experience"
   | "skills"
   | "links"
+  | "ask"
   | "cv"
   | "tickets";
 
 export default function AdminDashboard() {
   const [content, setContent] = useState<PortfolioContent | null>(null);
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [questions, setQuestions] = useState<AskQuestion[]>([]);
   const [tab, setTab] = useState<Tab>("content");
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
@@ -46,11 +61,16 @@ export default function AdminDashboard() {
     () => tickets.filter((ticket) => ticket.status !== "closed").length,
     [tickets],
   );
+  const questionCount = useMemo(
+    () => questions.filter((question) => question.status === "new").length,
+    [questions],
+  );
 
   async function loadAll() {
-    const [contentResponse, ticketResponse] = await Promise.all([
+    const [contentResponse, ticketResponse, askResponse] = await Promise.all([
       fetch("/api/admin/content"),
       fetch("/api/admin/tickets"),
+      fetch("/api/admin/ask"),
     ]);
     if (contentResponse.ok) {
       const payload = (await contentResponse.json()) as {
@@ -61,6 +81,10 @@ export default function AdminDashboard() {
     if (ticketResponse.ok) {
       const payload = (await ticketResponse.json()) as { tickets: Ticket[] };
       setTickets(payload.tickets);
+    }
+    if (askResponse.ok) {
+      const payload = (await askResponse.json()) as { questions: AskQuestion[] };
+      setQuestions(payload.questions);
     }
   }
 
@@ -116,6 +140,38 @@ export default function AdminDashboard() {
     await loadAll();
   }
 
+  async function saveQuestion(question: AskQuestion) {
+    const response = await fetch("/api/admin/ask", {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(question),
+    });
+    setStatus(response.ok ? "Question reply saved." : "Question update failed.");
+    if (response.ok) {
+      const payload = (await response.json()) as { questions: AskQuestion[] };
+      setQuestions(payload.questions);
+    }
+  }
+
+  async function removeQuestion(id: string) {
+    const response = await fetch("/api/admin/ask", {
+      method: "DELETE",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    setStatus(response.ok ? "Question deleted." : "Question delete failed.");
+    if (response.ok) {
+      const payload = (await response.json()) as { questions: AskQuestion[] };
+      setQuestions(payload.questions);
+    }
+  }
+
+  function updateQuestionFields(id: string, patch: Partial<AskQuestion>) {
+    setQuestions((items) =>
+      items.map((item) => (item.id === id ? { ...item, ...patch } : item)),
+    );
+  }
+
   if (!content) {
     return (
       <section className="adminLoading">
@@ -143,6 +199,9 @@ export default function AdminDashboard() {
           <a className="buttonSecondary" href="/links" target="_blank">
             View links
           </a>
+          <a className="buttonSecondary" href="/ask" target="_blank">
+            View ask
+          </a>
           <button className="buttonSecondary" onClick={logout}>
             Log out
           </button>
@@ -164,6 +223,9 @@ export default function AdminDashboard() {
         </button>
         <button className={tab === "links" ? "active" : ""} onClick={() => setTab("links")}>
           Links
+        </button>
+        <button className={tab === "ask" ? "active" : ""} onClick={() => setTab("ask")}>
+          Ask {questionCount ? `(${questionCount})` : ""}
         </button>
         <button className={tab === "cv" ? "active" : ""} onClick={() => setTab("cv")}>
           CV PDF
@@ -403,6 +465,84 @@ export default function AdminDashboard() {
             </button>
           </AdminPanel>
         </div>
+      ) : null}
+
+      {tab === "ask" ? (
+        <AdminPanel title="Anonymous Questions">
+          <p className="adminNote">
+            Reply privately until you choose where the answer appears. Published answers can show on /ask, and selected answers can also appear on the links profile.
+          </p>
+          {questions.length ? (
+            <div className="askAdminList">
+              {questions.map((question) => {
+                const shareUrl = absoluteUrl(`/ask/${question.id}`);
+                const canShare = question.status === "answered" && Boolean(question.answer.trim());
+
+                return (
+                  <article className="askAdminItem" key={question.id}>
+                    <div className="askAdminQuestion">
+                      <span>{question.status}</span>
+                      <time dateTime={new Date(question.createdAt).toISOString()}>
+                        {new Date(question.createdAt).toLocaleString()}
+                      </time>
+                      <p>{question.question}</p>
+                    </div>
+                    <TextArea
+                      label="Reply"
+                      value={question.answer}
+                      onChange={(value) => updateQuestionFields(question.id, { answer: value })}
+                    />
+                    <div className="adminInlineActions askAdminControls">
+                      <Select
+                        label="Status"
+                        value={question.status}
+                        options={["new", "answered", "archived"]}
+                        onChange={(value) => updateQuestionFields(question.id, { status: value })}
+                      />
+                      <Checkbox
+                        label="Show on /ask"
+                        checked={question.showOnAsk}
+                        onChange={(value) => updateQuestionFields(question.id, { showOnAsk: value })}
+                      />
+                      <Checkbox
+                        label="Feature on links profile"
+                        checked={question.showOnProfile}
+                        onChange={(value) => updateQuestionFields(question.id, { showOnProfile: value })}
+                      />
+                    </div>
+                    {canShare ? (
+                      <AdminQuestionShareActions
+                        answer={question.answer}
+                        question={question.question}
+                        url={shareUrl}
+                      />
+                    ) : (
+                      <p className="adminNote compactNote">
+                        Add a reply and set the status to answered before sharing.
+                      </p>
+                    )}
+                    <div className="adminInlineActions">
+                      <button className="smallButton" onClick={() => saveQuestion(question)}>
+                        Save reply
+                      </button>
+                      <button
+                        className="smallButton"
+                        onClick={() => saveQuestion({ ...question, status: "archived", showOnAsk: false, showOnProfile: false })}
+                      >
+                        Archive
+                      </button>
+                      <button className="dangerButton" onClick={() => removeQuestion(question.id)}>
+                        Delete
+                      </button>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="adminNote">No anonymous questions yet.</p>
+          )}
+        </AdminPanel>
       ) : null}
 
       {tab === "cv" ? (
@@ -860,6 +1000,60 @@ function PlatformPreview({
   );
 }
 
+function AdminQuestionShareActions({
+  question,
+  answer,
+  url,
+}: {
+  question: string;
+  answer: string;
+  url: string;
+}) {
+  const [copied, setCopied] = useState(false);
+  const storyText = `Anonymous question:\n${question}\n\nAhmed Salman:\n${answer}\n\n${url}`;
+  const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(truncateShareText(`${question}\n\n${answer}`, 230))}&url=${encodeURIComponent(url)}`;
+  const whatsAppUrl = `https://wa.me/?text=${encodeURIComponent(storyText)}`;
+
+  async function copyStoryText() {
+    await navigator.clipboard?.writeText(storyText).catch(() => null);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  }
+
+  async function shareStory() {
+    if (navigator.share) {
+      await navigator.share({
+        title: "Ahmed Salman answer",
+        text: storyText,
+        url,
+      }).catch(() => null);
+      return;
+    }
+
+    await copyStoryText();
+  }
+
+  return (
+    <div className="askAdminShare">
+      <a href={url} rel="noreferrer" target="_blank">
+        Open card
+      </a>
+      <a href={xUrl} rel="noreferrer" target="_blank">
+        X embed
+      </a>
+      <a href={whatsAppUrl} rel="noreferrer" target="_blank">
+        WhatsApp
+      </a>
+      <button type="button" onClick={shareStory}>
+        Story share
+      </button>
+      <button type="button" onClick={copyStoryText}>
+        {copied ? "Copied" : "Copy story text"}
+      </button>
+    </div>
+  );
+}
+
 function Checkbox({
   label,
   checked,
@@ -886,4 +1080,8 @@ function toLines(value: string) {
     .split("\n")
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function truncateShareText(value: string, maxLength: number) {
+  return value.length > maxLength ? `${value.slice(0, maxLength - 3)}...` : value;
 }

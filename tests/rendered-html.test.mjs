@@ -2,12 +2,30 @@ import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
-test("portfolio source includes public, admin, CV, and links surfaces", async () => {
-  const [home, admin, cv, links, seo, robots, sitemap, textSitemap, workflow] = await Promise.all([
+test("portfolio source includes public, admin, CV, links, and ask surfaces", async () => {
+  const [
+    home,
+    admin,
+    cv,
+    links,
+    ask,
+    publicAskApi,
+    adminAskApi,
+    schema,
+    seo,
+    robots,
+    sitemap,
+    textSitemap,
+    workflow,
+  ] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/admin/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/cv/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/links/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/ask/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/ask/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/admin/ask/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../db/schema.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/seo.ts", import.meta.url), "utf8"),
     readFile(new URL("../public/robots.txt", import.meta.url), "utf8"),
     readFile(new URL("../public/sitemap.xml", import.meta.url), "utf8"),
@@ -21,16 +39,24 @@ test("portfolio source includes public, admin, CV, and links surfaces", async ()
   assert.match(cv, /\/api\/cv\/file/);
   assert.match(links, /linkPage/);
   assert.match(links, /application\/ld\+json/);
-  assert.match(links, /Senior backend software engineer/);
-  assert.match(links, /Search Identity/);
+  assert.doesNotMatch(links, /linksSearchPanel/);
+  assert.match(ask, /AskForm/);
+  assert.match(ask, /QAPage/);
+  assert.match(publicAskApi, /createAskQuestion/);
+  assert.match(adminAskApi, /updateAskQuestion/);
+  assert.match(schema, /askQuestions/);
+  assert.match(schema, /idx_ask_questions_show_on_profile/);
   assert.match(seo, /Salman Twitch/);
   assert.match(seo, /احمد سالمان/);
   assert.match(robots, /\/sitemap\.xml/);
   assert.match(robots, /\/sitemap\.txt/);
+  assert.match(robots, /\/ask/);
   assert.match(robots, /\/admin/);
   assert.match(sitemap, /\/links/);
-  assert.match(sitemap, /2026-09-03/);
+  assert.match(sitemap, /\/ask/);
+  assert.match(sitemap, /2026-09-04/);
   assert.match(textSitemap, /https:\/\/ahmedsalman\.pages\.dev\/links/);
+  assert.match(textSitemap, /https:\/\/ahmedsalman\.pages\.dev\/ask/);
   assert.match(workflow, /npm run build/);
 });
 
