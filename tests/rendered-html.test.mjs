@@ -58,6 +58,10 @@ test("portfolio source includes public, admin, CV, links, and ask surfaces", asy
   assert.match(textSitemap, /https:\/\/ahmedsalman\.pages\.dev\/links/);
   assert.match(textSitemap, /https:\/\/ahmedsalman\.pages\.dev\/ask/);
   assert.match(workflow, /npm run build/);
+  assert.match(workflow, /npm run lint/);
+  assert.match(workflow, /deploy:cloudflare:dry-run/);
+  assert.match(workflow, /CLOUDFLARE_DEPLOY_HOOK/);
+  assert.match(workflow, /npm run deploy:cloudflare/);
 });
 
 test("default CV PDF is bundled for first deploy fallback", async () => {
