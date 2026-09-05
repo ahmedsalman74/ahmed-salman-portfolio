@@ -31,7 +31,7 @@ html {
 }
 
 body {
-  min-width: 320px;
+  min-width: min(320px, 100%);
   margin: 0;
   background:
     radial-gradient(circle at 78% 8%, rgba(22, 136, 255, 0.28), transparent 32rem),
@@ -2565,6 +2565,7 @@ a {
 
   .askTopbar { gap: 10px; padding: 12px; }
   .askTopbar nav { justify-content: flex-end; gap: 10px; }
+  .askTopbar .askNavCta { padding: 0 12px; }
   .askTopbar nav > a:not(.askNavCta) { display: none; }
   .askPage .askShell { width: calc(100% - 24px); padding-top: 16px; }
   .askProfileHero { grid-template-columns: 1fr; text-align: center; padding: 22px; }
