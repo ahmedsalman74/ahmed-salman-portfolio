@@ -202,7 +202,7 @@ export default async function LinksPage() {
                 <AskShareActions
                   answer={item.answer}
                   question={item.question}
-                  url={absoluteUrl(`/ask/${item.id}`)}
+                  url={absoluteUrl(`/ask/${item.id}?v=${item.updatedAt}`)}
                 />
               </article>
             ))}

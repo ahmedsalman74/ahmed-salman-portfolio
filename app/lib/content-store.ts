@@ -188,7 +188,7 @@ export async function updateAskQuestion(input: {
   const requestedStatus = ["new", "answered", "archived"].includes(input.status)
     ? input.status
     : "new";
-  const status = answer && requestedStatus !== "new" ? requestedStatus : answer ? "answered" : "new";
+  const status = requestedStatus === "archived" ? "archived" : answer ? "answered" : "new";
   const existing = await db
     .prepare("SELECT answered_at AS answeredAt FROM ask_questions WHERE id = ?")
     .bind(input.id)
@@ -215,7 +215,27 @@ export async function updateAskQuestion(input: {
 export async function deleteAskQuestion(id: string) {
   const db = getDb();
   await ensureDatabase();
-  await db.prepare("DELETE FROM ask_questions WHERE id = ?").bind(id).run();
+  await db.batch([
+    db.prepare("DELETE FROM ask_share_images WHERE id = ?").bind(id),
+    db.prepare("DELETE FROM ask_questions WHERE id = ?").bind(id),
+  ]);
+}
+
+export async function saveAskShareImage(id: string, revision: number, image: string) {
+  const db = getDb();
+  await ensureDatabase();
+  const result = await db.prepare(
+    "INSERT INTO ask_share_images (id, revision, image) SELECT id, updated_at, ? FROM ask_questions WHERE id = ? AND updated_at = ? AND status = 'answered' AND answer != '' ON CONFLICT(id) DO UPDATE SET revision = excluded.revision, image = excluded.image",
+  ).bind(image, id, revision).run();
+  return result.meta.changes > 0;
+}
+
+export async function getPublicAskShareImage(id: string) {
+  const db = getDb();
+  await ensureDatabase();
+  return db.prepare(
+    "SELECT i.image FROM ask_share_images i JOIN ask_questions q ON q.id = i.id AND q.updated_at = i.revision WHERE q.id = ? AND q.status = 'answered' AND q.answer != '' AND (q.show_on_ask = 1 OR q.show_on_profile = 1)",
+  ).bind(id).first<{ image: string }>();
 }
 
 export async function saveCvMetadata(input: {
@@ -255,6 +275,9 @@ async function ensureDatabase() {
     ),
     db.prepare(
       "CREATE TABLE IF NOT EXISTS ask_questions (id TEXT PRIMARY KEY NOT NULL, question TEXT NOT NULL, answer TEXT DEFAULT '' NOT NULL, status TEXT DEFAULT 'new' NOT NULL, show_on_ask INTEGER DEFAULT 0 NOT NULL, show_on_profile INTEGER DEFAULT 0 NOT NULL, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, answered_at INTEGER)",
+    ),
+    db.prepare(
+      "CREATE TABLE IF NOT EXISTS ask_share_images (id TEXT PRIMARY KEY NOT NULL, revision INTEGER NOT NULL, image TEXT NOT NULL)",
     ),
     db.prepare(
       "CREATE INDEX IF NOT EXISTS idx_tickets_created_at ON tickets(created_at)",

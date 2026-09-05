@@ -13,21 +13,26 @@ export default function AskForm() {
     setSubmitting(true);
     setStatus("");
 
-    const response = await fetch("/api/ask", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        question: form.get("question"),
-        website: form.get("website"),
-      }),
-    });
+    try {
+      const response = await fetch("/api/ask", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          question: form.get("question"),
+          website: form.get("website"),
+        }),
+      });
 
-    setSubmitting(false);
-    if (response.ok) {
-      formElement.reset();
-      setStatus("Question sent anonymously.");
-    } else {
-      setStatus("Question could not be sent. Try again with a little more detail.");
+      if (response.ok) {
+        formElement.reset();
+        setStatus("Question sent anonymously.");
+      } else {
+        setStatus("Question could not be sent. Try again with a little more detail.");
+      }
+    } catch {
+      setStatus("You appear to be offline. Your question is still here; reconnect and try again.");
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -36,6 +41,7 @@ export default function AskForm() {
       <label>
         Ask anonymously
         <textarea
+          dir="auto"
           name="question"
           maxLength={1200}
           minLength={8}

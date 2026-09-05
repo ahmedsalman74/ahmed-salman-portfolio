@@ -25,8 +25,9 @@ export async function generateMetadata({
     };
   }
 
-  const title = `Ahmed Salman answers: ${truncate(question.question, 64)}`;
-  const description = truncate(question.answer, 155);
+  const title = `Question: ${truncate(question.question, 90)}`;
+  const description = `Answer: ${truncate(question.answer, 240)}`;
+  const imageUrl = absoluteUrl(`/ask/${question.id}/image?v=${question.updatedAt}`);
 
   return {
     title,
@@ -47,7 +48,7 @@ export async function generateMetadata({
       siteName: "Ahmed Salman Portfolio",
       images: [
         {
-          url: "/og.png",
+          url: imageUrl,
           width: 1200,
           height: 630,
           alt: title,
@@ -58,7 +59,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: ["/og.png"],
+      images: [imageUrl],
     },
   };
 }
@@ -66,7 +67,7 @@ export async function generateMetadata({
 export default async function AskAnswerPage({ params }: AskAnswerPageProps) {
   const question = await getPublicAskQuestion(params.id);
   if (!question) notFound();
-  const url = absoluteUrl(`/ask/${question.id}`);
+  const url = absoluteUrl(`/ask/${question.id}?v=${question.updatedAt}`);
 
   return (
     <main className="askPage">
@@ -75,13 +76,15 @@ export default async function AskAnswerPage({ params }: AskAnswerPageProps) {
           <a className="backLink" href="/ask">
             All questions
           </a>
-          <p className="kicker">Shared Answer</p>
-          <h1>Ahmed Salman answered this.</h1>
+          <p className="kicker">Public Q&A</p>
+          <h1>Question & answer</h1>
         </header>
 
         <article className="askAnswerCard askDetailCard">
-          <p className="askQuestion">{question.question}</p>
-          <p className="askAnswer">{question.answer}</p>
+          <span className="kicker">Question</span>
+          <p className="askQuestion" dir="auto">{question.question}</p>
+          <span className="kicker">Answer</span>
+          <p className="askAnswer" dir="auto">{question.answer}</p>
           <AskShareActions
             answer={question.answer}
             question={question.question}

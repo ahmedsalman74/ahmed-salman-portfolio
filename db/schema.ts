@@ -49,3 +49,9 @@ export const askQuestions = sqliteTable(
     index("idx_ask_questions_show_on_profile").on(table.showOnProfile),
   ],
 );
+
+export const askShareImages = sqliteTable("ask_share_images", {
+  id: text("id").primaryKey(),
+  revision: integer("revision").notNull(),
+  image: text("image").notNull(),
+});

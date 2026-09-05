@@ -2,6 +2,8 @@
 
 import { ChangeEvent, useEffect, useMemo, useState, type CSSProperties } from "react";
 import PlatformIcon from "@/app/PlatformIcon";
+import AskShareActions from "@/app/ask/AskShareActions";
+import { uploadAnswerImage } from "@/app/ask/share-image";
 import {
   buildPlatformHref,
   getLinkPlatform,
@@ -150,6 +152,14 @@ export default function AdminDashboard() {
     if (response.ok) {
       const payload = (await response.json()) as { questions: AskQuestion[] };
       setQuestions(payload.questions);
+      const saved = payload.questions.find((item) => item.id === question.id);
+      if (saved?.status === "answered" && saved.answer.trim()) {
+        try {
+          await uploadAnswerImage(saved);
+        } catch (error) {
+          setStatus(error instanceof Error ? error.message : "Share card creation failed.");
+        }
+      }
     }
   }
 
@@ -476,7 +486,7 @@ export default function AdminDashboard() {
           {questions.length ? (
             <div className="askAdminList">
               {questions.map((question) => {
-                const shareUrl = absoluteUrl(`/ask/${question.id}`);
+                const shareUrl = absoluteUrl(`/ask/${question.id}?v=${question.updatedAt}`);
                 const canShare = question.status === "answered" && Boolean(question.answer.trim());
 
                 return (
@@ -1010,47 +1020,9 @@ function AdminQuestionShareActions({
   answer: string;
   url: string;
 }) {
-  const [copied, setCopied] = useState(false);
-  const storyText = `Anonymous question:\n${question}\n\nAhmed Salman:\n${answer}\n\n${url}`;
-  const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(truncateShareText(`${question}\n\n${answer}`, 230))}&url=${encodeURIComponent(url)}`;
-  const whatsAppUrl = `https://wa.me/?text=${encodeURIComponent(storyText)}`;
-
-  async function copyStoryText() {
-    await navigator.clipboard?.writeText(storyText).catch(() => null);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1800);
-  }
-
-  async function shareStory() {
-    if (navigator.share) {
-      await navigator.share({
-        title: "Ahmed Salman answer",
-        text: storyText,
-        url,
-      }).catch(() => null);
-      return;
-    }
-
-    await copyStoryText();
-  }
-
   return (
     <div className="askAdminShare">
-      <a href={url} rel="noreferrer" target="_blank">
-        Open card
-      </a>
-      <a href={xUrl} rel="noreferrer" target="_blank">
-        X embed
-      </a>
-      <a href={whatsAppUrl} rel="noreferrer" target="_blank">
-        WhatsApp
-      </a>
-      <button type="button" onClick={shareStory}>
-        Story share
-      </button>
-      <button type="button" onClick={copyStoryText}>
-        {copied ? "Copied" : "Copy story text"}
-      </button>
+      <AskShareActions question={question} answer={answer} url={url} showOpenCard />
     </div>
   );
 }
@@ -1081,8 +1053,4 @@ function toLines(value: string) {
     .split("\n")
     .map((item) => item.trim())
     .filter(Boolean);
-}
-
-function truncateShareText(value: string, maxLength: number) {
-  return value.length > maxLength ? `${value.slice(0, maxLength - 3)}...` : value;
 }

@@ -4,6 +4,7 @@ Allow: /links
 Allow: /ask
 Allow: /cv
 Disallow: /admin
+Disallow: /ask/admin
 Disallow: /api/admin
 
 Sitemap: https://ahmedsalman.pages.dev/sitemap.xml

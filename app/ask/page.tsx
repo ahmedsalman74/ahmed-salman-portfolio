@@ -97,6 +97,7 @@ export default async function AskPage() {
           question: item.question,
           answer: item.answer,
           createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
         }))}
         siteUrl={absoluteUrl("").replace(/\/$/, "")}
       />

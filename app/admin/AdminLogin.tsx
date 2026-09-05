@@ -1,9 +1,8 @@
 "use client";
 
-/* eslint-disable @next/next/no-html-link-for-pages -- Vinext link prefetch fails on Cloudflare Pages. */
 import { FormEvent, useState } from "react";
 
-export default function AdminLogin() {
+export default function AdminLogin({ askOnly = false }: { askOnly?: boolean }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -12,41 +11,45 @@ export default function AdminLogin() {
     setError("");
     setLoading(true);
     const form = new FormData(event.currentTarget);
-    const response = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        username: form.get("username"),
-        password: form.get("password"),
-      }),
-    });
-    setLoading(false);
-    if (!response.ok) {
-      setError("Invalid username or password.");
-      return;
+    try {
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          username: form.get("username"),
+          password: form.get("password"),
+        }),
+      });
+      if (!response.ok) {
+        setError("Invalid username or password.");
+        return;
+      }
+      window.location.href = askOnly ? "/ask/admin" : "/admin";
+    } catch {
+      setError("Could not sign in. Check your connection and try again.");
+    } finally {
+      setLoading(false);
     }
-    window.location.href = "/admin";
   }
 
   return (
     <section className="adminLogin">
-      <a className="backLink" href="/">
-        Back to portfolio
+      <a className="backLink" href={askOnly ? "/ask" : "/"}>
+        {askOnly ? "Back to Ask" : "Back to portfolio"}
       </a>
       <form onSubmit={handleSubmit}>
-        <p className="kicker">SaaS Admin</p>
-        <h1>Portfolio Control Room</h1>
+        <p className="kicker">{askOnly ? "Private inbox" : "SaaS Admin"}</p>
+        <h1>{askOnly ? "Ask Dashboard" : "Portfolio Control Room"}</h1>
         <p>
-          Sign in to manage projects, experience, site copy, tickets, and the
-          CV PDF.
+          {askOnly ? "Sign in to read questions, reply, and choose what to publish." : "Sign in to manage projects, experience, site copy, tickets, and the CV PDF."}
         </p>
         <label>
           Username
-          <input name="username" defaultValue="Ahmed Salman 74" autoComplete="username" />
+          <input name="username" defaultValue="Ahmed Salman 74" autoComplete="username" autoCapitalize="none" required />
         </label>
         <label>
           Password
-          <input name="password" type="password" autoComplete="current-password" />
+          <input name="password" type="password" autoComplete="current-password" required />
         </label>
         {error ? <span className="formError">{error}</span> : null}
         <button className="buttonPrimary" disabled={loading}>

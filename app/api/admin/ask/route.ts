@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
 
-  return NextResponse.json({ questions: await listAskQuestions() });
+  return NextResponse.json({ questions: await listAskQuestions() }, { headers: { "cache-control": "no-store" } });
 }
 
 export async function PATCH(request: Request) {

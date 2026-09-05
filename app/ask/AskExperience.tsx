@@ -14,6 +14,7 @@ type PublicQuestion = {
   question: string;
   answer: string;
   createdAt: number;
+  updatedAt?: number;
 };
 
 type AskExperienceProps = {
@@ -96,6 +97,12 @@ export default function AskExperience({
 
         <div className="askContentGrid">
           <section className="askFeed" aria-labelledby="answers-title">
+            <section className="askSubmitCard askComposer" id="ask-form">
+              <p className="kicker">Your turn</p>
+              <h2>What are you curious about?</h2>
+              <p>Questions are anonymous and moderated before appearing publicly.</p>
+              <AskForm />
+            </section>
             <header className="askFeedHeader">
               <div>
                 <p className="kicker">Public Q&A</p>
@@ -124,7 +131,7 @@ export default function AskExperience({
                       <AskShareActions
                         answer={item.answer}
                         question={item.question}
-                        url={`${siteUrl}/ask/${item.id}`}
+                        url={`${siteUrl}/ask/${item.id}?v=${item.updatedAt ?? item.createdAt}`}
                       />
                     </footer>
                   </article>
@@ -166,12 +173,6 @@ export default function AskExperience({
               ) : null}
             </section>
 
-            <section className="askSubmitCard" id="ask-form">
-              <p className="kicker">Your turn</p>
-              <h2>What are you curious about?</h2>
-              <p>Questions are anonymous and moderated before appearing publicly.</p>
-              <AskForm />
-            </section>
           </aside>
         </div>
       </section>

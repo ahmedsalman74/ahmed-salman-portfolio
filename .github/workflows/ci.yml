@@ -38,7 +38,7 @@ jobs:
         run: npm run lint
 
       - name: Smoke tests
-        run: node --test tests/rendered-html.test.mjs
+        run: node --test tests/*.test.mjs
 
       - name: Build
         run: npm run build
@@ -82,7 +82,7 @@ jobs:
           css_file=$(find dist/client/_next/static/css -maxdepth 1 -type f -name '*.css' -printf '%f\n' | head -n 1)
           curl --fail --silent --show-error --output /dev/null "https://ahmedsalman.pages.dev/_next/static/css/${css_file}"
 
-          for route in / /links /ask /admin /cv /api/ask; do
+          for route in / /links /ask /ask/admin /ask/app.webmanifest /ask/admin/app.webmanifest /ask-sw.js /admin /cv /api/ask; do
             curl --fail --silent --show-error --output /dev/null "https://ahmedsalman.pages.dev${route}"
           done
 
