@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-html-link-for-pages -- Vinext link prefetch fails on Cloudflare Pages. */
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import AskHeader from "../AskHeader";
 import AskShareActions from "../AskShareActions";
 import { getPublicAskQuestion } from "@/app/lib/content-store";
 import { absoluteUrl, seoProfile } from "@/app/seo";
@@ -68,34 +69,57 @@ export default async function AskAnswerPage({ params }: AskAnswerPageProps) {
   const question = await getPublicAskQuestion(params.id);
   if (!question) notFound();
   const url = absoluteUrl(`/ask/${question.id}?v=${question.updatedAt}`);
+  const author = seoProfile.name.split(" ")[0];
 
   return (
-    <main className="askPage">
-      <section className="askShell askDetailShell">
-        <header className="askHero">
-          <a className="backLink" href="/ask">
-            All questions
-          </a>
-          <p className="kicker">Public Q&A</p>
-          <h1>Question & answer</h1>
-        </header>
+    <div className="askRoot">
+      <AskHeader askHref="/ask#ask" />
 
-        <article className="askAnswerCard askDetailCard">
-          <span className="kicker">Question</span>
-          <p className="askQuestion" dir="auto">{question.question}</p>
-          <span className="kicker">Answer</span>
-          <p className="askAnswer" dir="auto">{question.answer}</p>
+      <main className="askWrap askDetail">
+        <a className="askBack" href="/ask">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M19 12H5M11 18l-6-6 6-6" />
+          </svg>
+          All questions
+        </a>
+
+        <article className="askCard">
+          <div className="askCardHead">
+            <span className="askCardBadge" aria-hidden="true">?</span>
+            <span className="askCardWho">
+              <b>Anonymous</b> ·{" "}
+              <time dateTime={new Date(question.createdAt).toISOString()}>
+                {formatDate(question.createdAt)}
+              </time>
+            </span>
+          </div>
+          <h1 className="askCardQuestion" dir="auto">{question.question}</h1>
+          <div className="askCardAnswer">
+            <span className="askCardAnswerLabel">
+              <span className="askCardAnswerAvatar" aria-hidden="true">AS</span>
+              {author}
+            </span>
+            <div className="askCardAnswerText" dir="auto">{question.answer}</div>
+          </div>
           <AskShareActions
             answer={question.answer}
             question={question.question}
             url={url}
           />
         </article>
-      </section>
-    </main>
+      </main>
+    </div>
   );
 }
 
 function truncate(value: string, maxLength: number) {
   return value.length > maxLength ? `${value.slice(0, maxLength - 3)}...` : value;
+}
+
+function formatDate(value: number) {
+  return new Intl.DateTimeFormat("en", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(value));
 }

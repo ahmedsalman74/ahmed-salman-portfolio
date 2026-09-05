@@ -8,9 +8,9 @@ export async function createAnswerImage(content: ShareContent, story = false): P
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Image creation is unavailable in this browser.");
   const { width, height } = canvas;
-  ctx.fillStyle = "#0b121b";
+  ctx.fillStyle = "#131019";
   ctx.fillRect(0, 0, width, height);
-  ctx.fillStyle = "#37e0ff";
+  ctx.fillStyle = "#8f72ff";
   ctx.fillRect(0, 0, width, 8);
   const margin = story ? 72 : 60;
   const textWidth = width - margin * 2;
@@ -20,7 +20,7 @@ export async function createAnswerImage(content: ShareContent, story = false): P
   ctx.textBaseline = "top";
   drawLabel(ctx, "QUESTION", margin, top);
   drawText(ctx, content.question, margin, top + 40, textWidth, questionHeight - 40, story ? 52 : 40);
-  ctx.fillStyle = "#2d3c4b";
+  ctx.fillStyle = "#3a3350";
   ctx.fillRect(margin, answerTop - 26, textWidth, 2);
   drawLabel(ctx, "ANSWER", margin, answerTop);
   drawText(ctx, content.answer, margin, answerTop + 40, textWidth, height - answerTop - (story ? 230 : 76), story ? 48 : 36);
@@ -34,7 +34,7 @@ function drawLabel(ctx: CanvasRenderingContext2D, text: string, x: number, y: nu
   ctx.direction = "ltr";
   ctx.textAlign = "left";
   ctx.font = "bold 22px Arial, sans-serif";
-  ctx.fillStyle = "#37e0ff";
+  ctx.fillStyle = "#8f72ff";
   ctx.fillText(text, x, y);
 }
 
@@ -56,7 +56,7 @@ function drawText(ctx: CanvasRenderingContext2D, text: string, x: number, y: num
     while (last && ctx.measureText(`${last}...`).width > width) last = last.slice(0, -1);
     lines[maxLines - 1] = `${last}...`;
   }
-  ctx.fillStyle = "#f3f7fa";
+  ctx.fillStyle = "#efedf6";
   ctx.direction = rtl ? "rtl" : "ltr";
   ctx.textAlign = rtl ? "right" : "left";
   lines.forEach((line, index) => ctx.fillText(line, rtl ? x + width : x, y + index * size * 1.5));

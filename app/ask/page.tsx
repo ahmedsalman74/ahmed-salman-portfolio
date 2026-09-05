@@ -77,7 +77,7 @@ export default async function AskPage() {
   });
 
   return (
-    <main className="askPage">
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: pageJsonLd }}
@@ -101,7 +101,7 @@ export default async function AskPage() {
         }))}
         siteUrl={absoluteUrl("").replace(/\/$/, "")}
       />
-    </main>
+    </>
   );
 }
 

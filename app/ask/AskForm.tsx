@@ -2,8 +2,12 @@
 
 import { FormEvent, useState } from "react";
 
+const MAX_LENGTH = 1200;
+
 export default function AskForm() {
   const [status, setStatus] = useState("");
+  const [tone, setTone] = useState<"success" | "error">("success");
+  const [length, setLength] = useState(0);
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -25,11 +29,15 @@ export default function AskForm() {
 
       if (response.ok) {
         formElement.reset();
-        setStatus("Question sent anonymously.");
+        setLength(0);
+        setTone("success");
+        setStatus("Question sent — it'll appear here after review.");
       } else {
+        setTone("error");
         setStatus("Question could not be sent. Try again with a little more detail.");
       }
     } catch {
+      setTone("error");
       setStatus("You appear to be offline. Your question is still here; reconnect and try again.");
     } finally {
       setSubmitting(false);
@@ -37,18 +45,21 @@ export default function AskForm() {
   }
 
   return (
-    <form className="askForm" onSubmit={handleSubmit}>
-      <label>
+    <form onSubmit={handleSubmit}>
+      <label className="srOnly" htmlFor="ask-question">
         Ask anonymously
-        <textarea
-          dir="auto"
-          name="question"
-          maxLength={1200}
-          minLength={8}
-          placeholder="Ask about backend engineering, gaming, streaming, tools, career, or anything you want answered."
-          required
-        />
       </label>
+      <textarea
+        className="askComposeField"
+        dir="auto"
+        id="ask-question"
+        name="question"
+        maxLength={MAX_LENGTH}
+        minLength={8}
+        onChange={(event) => setLength(event.target.value.length)}
+        placeholder="Backend engineering, gaming, streaming, tools, career — whatever you're curious about."
+        required
+      />
       <input
         aria-hidden="true"
         className="askTrap"
@@ -56,11 +67,16 @@ export default function AskForm() {
         tabIndex={-1}
         type="text"
       />
-      <button className="buttonPrimary" disabled={submitting}>
-        {submitting ? "Sending..." : "Send anonymous question"}
-      </button>
+      <div className="askComposeFoot">
+        <span className="askComposeHint">
+          {length} / {MAX_LENGTH}
+        </span>
+        <button className="askBtn askBtnPrimary" disabled={submitting}>
+          {submitting ? "Sending…" : "Send anonymous question"}
+        </button>
+      </div>
       {status ? (
-        <p className="askNotice" role="status" aria-live="polite">
+        <p className="askComposeNotice" data-tone={tone} role="status" aria-live="polite">
           {status}
         </p>
       ) : null}
