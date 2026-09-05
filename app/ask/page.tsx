@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import AskForm from "./AskForm";
-import AskShareActions from "./AskShareActions";
+import AskExperience from "./AskExperience";
 import { getPortfolioContent, listPublicAskQuestions } from "../lib/content-store";
 import { absoluteUrl, seoProfile } from "../seo";
 
@@ -48,7 +47,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AskPage() {
-  const [{ profile }, questions] = await Promise.all([
+  const [{ profile, linkPage }, questions] = await Promise.all([
     getPortfolioContent(),
     listPublicAskQuestions(),
   ]);
@@ -83,46 +82,24 @@ export default async function AskPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: pageJsonLd }}
       />
-      <section className="askShell">
-        <header className="askHero">
-          <a className="backLink" href="/links">
-            Back to links
-          </a>
-          <p className="kicker">Anonymous Q&A</p>
-          <h1>Ask Ahmed anything.</h1>
-          <p>
-            Send a question without your name. Published replies appear here only after Ahmed answers and approves them.
-          </p>
-        </header>
-
-        <div className="askGrid">
-          <section className="askPanel askSubmitPanel">
-            <AskForm />
-          </section>
-
-          <section className="askPanel">
-            <p className="kicker">Public Answers</p>
-            <h2>Answered questions</h2>
-            {questions.length ? (
-              <div className="askAnswerList">
-                {questions.map((item) => (
-                  <article className="askAnswerCard" id={item.id} key={item.id}>
-                    <p className="askQuestion">{item.question}</p>
-                    <p className="askAnswer">{item.answer}</p>
-                    <AskShareActions
-                      answer={item.answer}
-                      question={item.question}
-                      url={absoluteUrl(`/ask/${item.id}`)}
-                    />
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <p className="askEmpty">No public answers yet.</p>
-            )}
-          </section>
-        </div>
-      </section>
+      <AskExperience
+        profile={{ name: profile.name, role: profile.role, summary: profile.summary }}
+        linkProfile={{
+          handle: linkPage.handle,
+          bio: linkPage.bio,
+          avatarText: linkPage.avatarText,
+          avatarImage: linkPage.avatarImage,
+          showVerifiedBadge: linkPage.showVerifiedBadge,
+          socials: linkPage.socials,
+        }}
+        questions={questions.map((item) => ({
+          id: item.id,
+          question: item.question,
+          answer: item.answer,
+          createdAt: item.createdAt,
+        }))}
+        siteUrl={absoluteUrl("").replace(/\/$/, "")}
+      />
     </main>
   );
 }

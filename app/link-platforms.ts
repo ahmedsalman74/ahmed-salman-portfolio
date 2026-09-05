@@ -155,6 +155,7 @@ export const LINK_PLATFORMS: LinkPlatform[] = [
   platform("phone", "Phone", "Contact", "PH", "tel:{value}", "phone number", fallback("#37e0ff")),
   platform("calendly", "Calendly", "Contact", "CA", "https://calendly.com/{value}", "username or event path", icon(siCalendly)),
   platform("portfolio", "Portfolio", "Contact", "PF", "{value}", "/ or /cv", fallback("#37e0ff")),
+  platform("ask", "Anonymous Ask", "Contact", "?", "{value}", "/ask", fallback("#37e0ff")),
   platform("custom", "Custom", "Contact", "LN", "{value}", "full URL", fallback("#37e0ff")),
 ];
 
@@ -200,6 +201,8 @@ export function inferPlatformId(input: {
     ["@ ", "email"],
     ["cv", "portfolio"],
     ["portfolio", "portfolio"],
+    ["/ask", "ask"],
+    ["anonymous ask", "ask"],
   ];
 
   return aliases.find(([needle]) => text.includes(needle))?.[1] ?? "custom";

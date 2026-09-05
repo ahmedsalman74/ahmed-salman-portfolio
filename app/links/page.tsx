@@ -148,8 +148,10 @@ export default async function LinksPage() {
               {linkPage.headline || profile.name}
               {linkPage.showVerifiedBadge ? <span aria-label="Verified">✓</span> : null}
             </h1>
-            <p>{linkPage.bio || profile.summary}</p>
-            <p className="linksSeoLine">{seoProfile.shortDescription}</p>
+            {linkPage.bio ? <p className="linksBio">{linkPage.bio}</p> : null}
+            {linkPage.highlightText ? (
+              <p className="linksSeoLine">{linkPage.highlightText}</p>
+            ) : null}
           </div>
           {linkPage.showShareButton ? <ShareButton /> : null}
         </header>

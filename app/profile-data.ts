@@ -87,6 +87,7 @@ export type LinkPage = {
   handle: string;
   headline: string;
   bio: string;
+  highlightText: string;
   avatarText: string;
   avatarImage: string;
   status: string;
@@ -309,6 +310,8 @@ export const defaultPortfolioContent: PortfolioContent = {
     headline: "Ahmed Salman",
     bio:
       "Senior backend software engineer, passionate gamer, and game streamer exploring new games, developer tools, Twitch, Kick, TikTok, X/Twitter, and emerging technologies.",
+    highlightText:
+      "Senior backend software engineer, passionate gamer, and game streamer exploring Twitch, Kick, TikTok, X/Twitter, new games, and new technologies.",
     avatarText: "AS",
     avatarImage: "",
     status: "Available for backend roles and consulting",
@@ -397,6 +400,17 @@ export const defaultPortfolioContent: PortfolioContent = {
         description: "Open my CV as a PDF page.",
         category: "Featured",
         icon: "CV",
+        enabled: true,
+        featured: true,
+      },
+      {
+        title: "Ask me anonymously",
+        url: "/ask",
+        platform: "ask",
+        username: "/ask",
+        description: "Send an anonymous question or read my public answers.",
+        category: "Featured",
+        icon: "?",
         enabled: true,
         featured: true,
       },

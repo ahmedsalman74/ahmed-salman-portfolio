@@ -46,7 +46,7 @@ test("portfolio source includes public, admin, CV, links, and ask surfaces", asy
   assert.match(links, /linkPage/);
   assert.match(links, /application\/ld\+json/);
   assert.doesNotMatch(links, /linksSearchPanel/);
-  assert.match(ask, /AskForm/);
+  assert.match(ask, /AskExperience/);
   assert.match(ask, /QAPage/);
   assert.match(publicAskApi, /createAskQuestion/);
   assert.match(adminAskApi, /updateAskQuestion/);

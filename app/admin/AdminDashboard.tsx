@@ -369,7 +369,8 @@ export default function AdminDashboard() {
             <Checkbox label="Enable links page" checked={content.linkPage.enabled} onChange={(value) => updateLinkPage("enabled", value)} />
             <Field label="Handle" value={content.linkPage.handle} onChange={(value) => updateLinkPage("handle", value)} />
             <Field label="Headline" value={content.linkPage.headline} onChange={(value) => updateLinkPage("headline", value)} />
-            <TextArea label="Bio" value={content.linkPage.bio} onChange={(value) => updateLinkPage("bio", value)} />
+            <TextArea label="Intro text (leave empty to hide)" value={content.linkPage.bio} onChange={(value) => updateLinkPage("bio", value)} />
+            <TextArea label="Highlighted title (leave empty to hide)" value={content.linkPage.highlightText} onChange={(value) => updateLinkPage("highlightText", value)} />
             <Field label="Avatar initials" value={content.linkPage.avatarText} onChange={(value) => updateLinkPage("avatarText", value)} />
             <Field label="Avatar image URL" value={content.linkPage.avatarImage} onChange={(value) => updateLinkPage("avatarImage", value)} />
             <Field label="Status text" value={content.linkPage.status} onChange={(value) => updateLinkPage("status", value)} />
@@ -384,7 +385,7 @@ export default function AdminDashboard() {
             <Field label="Accent color" value={content.linkPage.accent} onChange={(value) => updateLinkPage("accent", value)} />
             <Field label="Background color" value={content.linkPage.background} onChange={(value) => updateLinkPage("background", value)} />
             <p className="adminNote">
-              Use hex colors like #37e0ff. The page stays hidden from the portfolio navigation and is available only by direct URL.
+              Use hex colors like #37e0ff. The links profile stays available only by its direct URL.
             </p>
           </AdminPanel>
 
